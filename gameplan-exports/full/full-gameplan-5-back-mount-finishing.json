@@ -1,0 +1,380 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T21:19:39.060Z",
+  "library": [
+    {
+      "id": "seed-back-control",
+      "type": "position",
+      "label": "Back Control",
+      "notes": [
+        {
+          "text": "Most decisive position in Gi BJJ. Back exposure produced 38% of all subs at 2022 black-belt Worlds (43% of male black-belt subs in 2026); every athlete who scored back-control points at 2022 Worlds won. Seatbelt + chest-to-back connection first.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "Rear Mount",
+        "Back Mount"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-bow-and-arrow",
+      "type": "submission",
+      "label": "Bow-and-Arrow Choke",
+      "notes": [
+        {
+          "text": "Primary finish. Rear chokes had the highest recorded success rate at white/blue belt (~75%). Establish the collar grip before trying to open the neck.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "choke",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Chokes",
+      "fromPositionId": "seed-back-control",
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-slide-collar",
+      "type": "submission",
+      "label": "Sliding Collar Choke",
+      "notes": [
+        {
+          "text": "Primary finish alongside the bow-and-arrow. Establish the collar grip before trying to open the neck.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "choke",
+        "gi"
+      ],
+      "aliases": [
+        "Slide-In Collar Choke"
+      ],
+      "variantOf": null,
+      "category": "Chokes",
+      "fromPositionId": "seed-back-control",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-react-peels-grip",
+      "type": "reaction",
+      "label": "Peels Grip",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent peels grip"
+      ],
+      "variantOf": null,
+      "category": "Submission defence",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-trap-arm-switch",
+      "type": "transition",
+      "label": "Trap Arm & Switch Sides",
+      "notes": [
+        {
+          "text": "When they defend the choking arm: trap an arm, switch sides, re-attack the collar.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "seed-back-control",
+      "toPositionId": "seed-back-control"
+    },
+    {
+      "id": "seed-armbar",
+      "type": "submission",
+      "label": "Armbar",
+      "notes": [
+        {
+          "text": "Second-best submission family (14% of male black-belt subs). From the back: only when they rotate far enough to escape.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "arm-lock"
+      ],
+      "aliases": [
+        "Juji Gatame"
+      ],
+      "variantOf": null,
+      "category": "Arm attacks",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-mount",
+      "type": "position",
+      "label": "Mount",
+      "notes": [
+        {
+          "text": "Second scoring layer after the pass. Cross-collar choke and armbar live here.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-cross-collar",
+      "type": "submission",
+      "label": "Cross-Collar Choke",
+      "notes": [
+        {
+          "text": "Main mount attack.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "choke",
+        "gi"
+      ],
+      "aliases": [
+        "X-Choke"
+      ],
+      "variantOf": null,
+      "category": "Chokes",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-react-turns-away",
+      "type": "reaction",
+      "label": "Turns Away",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent turns away"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-technical-mount",
+      "type": "position",
+      "label": "Technical Mount",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": "seed-mount",
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-tech-mount-back-take",
+      "type": "transition",
+      "label": "Technical Mount Back Take",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "seed-technical-mount",
+      "toPositionId": "seed-back-control"
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-finishing",
+      "name": "5 · Back & Mount Finishing (Full)",
+      "createdAt": "2026-07-12T21:19:39.060Z",
+      "updatedAt": "2026-07-12T21:19:39.060Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-finishing-n1",
+          "libraryId": "seed-back-control",
+          "x": 280,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-finishing-n2",
+          "libraryId": "seed-bow-and-arrow",
+          "x": 120,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-finishing-n3",
+          "libraryId": "ebg-slide-collar",
+          "x": 440,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-finishing-n4",
+          "libraryId": "seed-react-peels-grip",
+          "x": 260,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-finishing-n5",
+          "libraryId": "ebg-trap-arm-switch",
+          "x": 430,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-finishing-n6",
+          "libraryId": "seed-armbar",
+          "x": 100,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-finishing-n7",
+          "libraryId": "seed-mount",
+          "x": 100,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-finishing-n8",
+          "libraryId": "seed-cross-collar",
+          "x": 240,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-finishing-n9",
+          "libraryId": "seed-react-turns-away",
+          "x": 100,
+          "y": 750
+        },
+        {
+          "id": "ebg-plan-finishing-n10",
+          "libraryId": "seed-technical-mount",
+          "x": 240,
+          "y": 750
+        },
+        {
+          "id": "ebg-plan-finishing-n11",
+          "libraryId": "seed-tech-mount-back-take",
+          "x": 380,
+          "y": 750
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-finishing-c1",
+          "fromNodeId": "ebg-plan-finishing-n1",
+          "toNodeId": "ebg-plan-finishing-n2",
+          "label": "collar grip first"
+        },
+        {
+          "id": "ebg-plan-finishing-c2",
+          "fromNodeId": "ebg-plan-finishing-n1",
+          "toNodeId": "ebg-plan-finishing-n3",
+          "label": "alt collar finish"
+        },
+        {
+          "id": "ebg-plan-finishing-c3",
+          "fromNodeId": "ebg-plan-finishing-n2",
+          "toNodeId": "ebg-plan-finishing-n4",
+          "label": "defends choking arm"
+        },
+        {
+          "id": "ebg-plan-finishing-c4",
+          "fromNodeId": "ebg-plan-finishing-n3",
+          "toNodeId": "ebg-plan-finishing-n4",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-finishing-c5",
+          "fromNodeId": "ebg-plan-finishing-n4",
+          "toNodeId": "ebg-plan-finishing-n5",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-finishing-c6",
+          "fromNodeId": "ebg-plan-finishing-n5",
+          "toNodeId": "ebg-plan-finishing-n1",
+          "label": "re-attack collar"
+        },
+        {
+          "id": "ebg-plan-finishing-c7",
+          "fromNodeId": "ebg-plan-finishing-n1",
+          "toNodeId": "ebg-plan-finishing-n6",
+          "label": "they rotate out"
+        },
+        {
+          "id": "ebg-plan-finishing-c8",
+          "fromNodeId": "ebg-plan-finishing-n7",
+          "toNodeId": "ebg-plan-finishing-n6",
+          "label": "arm exposed"
+        },
+        {
+          "id": "ebg-plan-finishing-c9",
+          "fromNodeId": "ebg-plan-finishing-n7",
+          "toNodeId": "ebg-plan-finishing-n8",
+          "label": "main attack"
+        },
+        {
+          "id": "ebg-plan-finishing-c10",
+          "fromNodeId": "ebg-plan-finishing-n7",
+          "toNodeId": "ebg-plan-finishing-n9",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-finishing-c11",
+          "fromNodeId": "ebg-plan-finishing-n9",
+          "toNodeId": "ebg-plan-finishing-n10",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-finishing-c12",
+          "fromNodeId": "ebg-plan-finishing-n10",
+          "toNodeId": "ebg-plan-finishing-n11",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-finishing-c13",
+          "fromNodeId": "ebg-plan-finishing-n11",
+          "toNodeId": "ebg-plan-finishing-n1",
+          "label": "back again"
+        }
+      ]
+    }
+  ]
+}

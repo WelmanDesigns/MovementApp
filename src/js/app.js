@@ -15,6 +15,7 @@ const App = {
   init() {
     Progress.load();
     RulesProgress.load();
+    BeltStore.load();
     this.currentDay = Progress.getCurrentDay();
     this.bindGlobalEvents();
     GameplanStore.init().then(() => {
@@ -104,6 +105,15 @@ const App = {
         app.innerHTML = RulesUI.renderChecker(this._checkerState);
         break;
 
+      // ── Belt Tracker screens ──────────────────────────────
+      case 'bt-home':
+        app.innerHTML = BeltUI.renderHome();
+        break;
+      case 'bt-stage':
+        app.innerHTML = BeltUI.renderStage(params.stageId);
+        BeltUI._applyFilters(); // saved search/filter state from this session
+        break;
+
       // ── Gameplan screens ──────────────────────────────────
       case 'gp-list':
         GameplanStore.getAll().then(plans => {
@@ -180,6 +190,10 @@ const App = {
           this.render('rules-quiz', { lesson: target.dataset.lesson });
         } else if (nav === 'rules-checker') {
           this.render('rules-checker');
+        } else if (nav === 'bt-home') {
+          this.render('bt-home');
+        } else if (nav === 'bt-stage') {
+          this.render('bt-stage', { stageId: target.dataset.stageId });
         }
         return;
       }
@@ -188,6 +202,12 @@ const App = {
       const actionEl = e.target.closest('[data-action]');
       if (actionEl) {
         const action = actionEl.dataset.action;
+
+        // Belt Tracker actions are handled by BeltUI
+        if (action.startsWith('bt-')) {
+          BeltUI.handleAction(action, actionEl, e);
+          return;
+        }
 
         if (action === 'gp-create') {
           const gp = GameplanData.createGameplan();
@@ -851,6 +871,11 @@ const App = {
 
     // Gameplan input handling (label edit + library search)
     document.getElementById('app').addEventListener('input', (e) => {
+      // Belt Tracker autosaved fields
+      if (e.target.closest('.bt-stage-screen')) {
+        BeltUI.handleInput(e);
+        return;
+      }
       if (e.target.id === 'gp-detail-label-input') {
         const node = GameplanCanvas.getSelectedNode();
         if (node) {
@@ -908,6 +933,11 @@ const App = {
 
     // Library entry detail: variant-of and from/to position selectors
     document.getElementById('app').addEventListener('change', (e) => {
+      // Belt Tracker selects and checkboxes
+      if (e.target.closest('.bt-stage-screen')) {
+        BeltUI.handleChange(e);
+        return;
+      }
       if (e.target.id === 'gp-lib-variant-select') {
         const entry = this._getOpenLibraryEntry();
         if (entry) {

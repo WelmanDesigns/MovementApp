@@ -1,0 +1,236 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T21:19:39.060Z",
+  "library": [
+    {
+      "id": "seed-standing",
+      "type": "position",
+      "label": "Neutral Standing",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "neutral"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Standing",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-grip-fighting-range",
+      "type": "position",
+      "label": "Grip-Fighting Range",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "neutral",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Standing",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-collar-drag",
+      "type": "transition",
+      "label": "Collar Drag",
+      "notes": [
+        {
+          "text": "Second standing attack - drag into a single leg.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-grip-fighting-range",
+      "toPositionId": "seed-single-leg-x"
+    },
+    {
+      "id": "seed-single-leg",
+      "type": "transition",
+      "label": "Single Leg Takedown",
+      "notes": [
+        {
+          "text": "Finish route for the collar drag, the SLX technical stand-up and the Octopus wrestle-up.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-headquarters",
+      "type": "position",
+      "label": "Headquarters",
+      "notes": [
+        {
+          "text": "Home base on top. A successful pass was associated with a 99.6% win probability across 1,089 adult black-belt matches. Build the game around getting ONE clean pass. If they pull guard first, enter here immediately and start passing - no separate decision needed.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "HQ"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-guard-pull",
+      "type": "transition",
+      "label": "Guard Pull",
+      "notes": [
+        {
+          "text": "Guard pulls established guard 94% of the time at lower belts - but only pull when you land somewhere useful: they stay standing -> Shallow DLR or shin-to-shin; they kneel -> knee shield; they hip-switch immediately -> Octopus.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "guard-pull"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": "seed-closed-guard"
+    },
+    {
+      "id": "seed-seated-guard",
+      "type": "position",
+      "label": "Seated Guard",
+      "notes": [
+        {
+          "text": "Start seated, never flat. One sleeve or two-on-one, collar grip where available, shin-to-shin, head close to their hip or ribs.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-standing",
+      "name": "1 · Standing Game",
+      "createdAt": "2026-07-12T21:19:39.060Z",
+      "updatedAt": "2026-07-12T21:19:39.060Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-standing-n1",
+          "libraryId": "seed-standing",
+          "x": 200,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-standing-n2",
+          "libraryId": "seed-grip-fighting-range",
+          "x": 200,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-standing-n3",
+          "libraryId": "ebg-collar-drag",
+          "x": 100,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n4",
+          "libraryId": "seed-single-leg",
+          "x": 100,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-standing-n5",
+          "libraryId": "seed-headquarters",
+          "x": 100,
+          "y": 600
+        },
+        {
+          "id": "ebg-plan-standing-n6",
+          "libraryId": "seed-guard-pull",
+          "x": 320,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n7",
+          "libraryId": "seed-seated-guard",
+          "x": 320,
+          "y": 470
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-standing-c1",
+          "fromNodeId": "ebg-plan-standing-n1",
+          "toNodeId": "ebg-plan-standing-n2",
+          "label": "collar + sleeve"
+        },
+        {
+          "id": "ebg-plan-standing-c2",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n3",
+          "label": "clear attacking angle"
+        },
+        {
+          "id": "ebg-plan-standing-c3",
+          "fromNodeId": "ebg-plan-standing-n3",
+          "toNodeId": "ebg-plan-standing-n4",
+          "label": "drag to the leg"
+        },
+        {
+          "id": "ebg-plan-standing-c4",
+          "fromNodeId": "ebg-plan-standing-n4",
+          "toNodeId": "ebg-plan-standing-n5",
+          "label": "stay on top"
+        },
+        {
+          "id": "ebg-plan-standing-c5",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n6",
+          "label": "no clean attack"
+        },
+        {
+          "id": "ebg-plan-standing-c6",
+          "fromNodeId": "ebg-plan-standing-n6",
+          "toNodeId": "ebg-plan-standing-n7",
+          "label": "land seated"
+        }
+      ]
+    }
+  ]
+}

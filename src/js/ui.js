@@ -45,6 +45,10 @@ const UI = {
     const rulesSubtext = rulesUnitsDone > 0
       ? `${rulesUnitsDone}/${RULES_UNITS.length} sections mastered`
       : 'Know the rules, win the scrambles';
+    const beltStarted = BeltData.STAGES.filter(s => BeltStore.isStageStarted(s.id)).length;
+    const beltSubtext = beltStarted > 0
+      ? `${beltStarted}/${BeltData.STAGES.length} stages started`
+      : 'Your curriculum, stripe by stripe';
 
     return `
       <div class="screen main-home-screen" role="main" aria-label="Movement App">
@@ -70,6 +74,11 @@ const UI = {
               <div class="workout-card-icon" aria-hidden="true">&#x2696;&#xFE0F;</div>
               <h2 class="workout-card-title">IBJJF Rules</h2>
               <p class="workout-card-sub">${rulesSubtext}</p>
+            </button>
+            <button class="workout-card workout-card-belt" data-nav="bt-home" aria-label="Belt Tracker">
+              <div class="workout-card-icon" aria-hidden="true">&#x1F3C5;</div>
+              <h2 class="workout-card-title">Belt Tracker</h2>
+              <p class="workout-card-sub">${beltSubtext}</p>
             </button>
           </div>
         </section>

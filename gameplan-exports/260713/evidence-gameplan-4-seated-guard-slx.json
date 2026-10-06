@@ -1,0 +1,314 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T11:26:41.561Z",
+  "library": [
+    {
+      "id": "seed-seated-guard",
+      "type": "position",
+      "label": "Seated Guard",
+      "notes": [
+        {
+          "text": "Start seated, never flat. One sleeve or two-on-one, collar grip where available, shin-to-shin, head close to their hip or ribs.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-shin-to-shin",
+      "type": "position",
+      "label": "Shin-to-Shin",
+      "notes": [
+        {
+          "text": "Entry hub from seated guard: sleeve or two-on-one, collar grip if available, head close to their hip, immediate entry underneath one leg.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": "seed-seated-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-single-leg-x",
+      "type": "position",
+      "label": "Single Leg X",
+      "notes": [
+        {
+          "text": "Main bottom engine. Leg-control actions created 60.5% of sweeps at 2022 Worlds; X-guard family sweeps succeeded ~63% at lower belts. First objective is to come up on top, not to submit.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [
+        "SLX",
+        "Ashi Garami"
+      ],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-straight-ankle",
+      "type": "submission",
+      "label": "Straight Ankle Lock",
+      "notes": [
+        {
+          "text": "From SLX only when the finish is clearly available - otherwise take the sweep.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "leg-lock"
+      ],
+      "aliases": [
+        "Achilles Lock"
+      ],
+      "variantOf": null,
+      "category": "Leg attacks",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-tech-standup-sweep",
+      "type": "transition",
+      "label": "Technical Stand-Up Sweep",
+      "notes": [
+        {
+          "text": "Control the ankle, inside knee glued to their hip, off-balance backward or sideways, come to elbow then hand, stand while keeping the leg. No inversion or flexibility required.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "seed-single-leg-x",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-single-leg",
+      "type": "transition",
+      "label": "Single Leg Takedown",
+      "notes": [
+        {
+          "text": "Finish route for the collar drag, the SLX technical stand-up and the Octopus wrestle-up.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-drives-forward",
+      "type": "reaction",
+      "label": "Drives Forward",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent drives forward"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-outside-dump",
+      "type": "transition",
+      "label": "Outside Dump",
+      "notes": [
+        {
+          "text": "When they drive forward or peel your feet: redirect their knee across your centreline, extend the outside leg, rotate them to the trapped-leg side, follow up to top immediately.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "seed-single-leg-x",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-headquarters",
+      "type": "position",
+      "label": "Headquarters",
+      "notes": [
+        {
+          "text": "Home base on top. A successful pass was associated with a 99.6% win probability across 1,089 adult black-belt matches. Build the game around getting ONE clean pass.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "HQ"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-slx",
+      "name": "4 · Seated Guard to SLX",
+      "createdAt": "2026-07-12T11:26:41.561Z",
+      "updatedAt": "2026-07-12T11:26:41.561Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-slx-n1",
+          "libraryId": "seed-seated-guard",
+          "x": 260,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-slx-n2",
+          "libraryId": "ebg-shin-to-shin",
+          "x": 260,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-slx-n3",
+          "libraryId": "seed-single-leg-x",
+          "x": 260,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-slx-n4",
+          "libraryId": "seed-straight-ankle",
+          "x": 440,
+          "y": 240
+        },
+        {
+          "id": "ebg-plan-slx-n5",
+          "libraryId": "ebg-tech-standup-sweep",
+          "x": 160,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-slx-n6",
+          "libraryId": "seed-single-leg",
+          "x": 160,
+          "y": 600
+        },
+        {
+          "id": "ebg-plan-slx-n7",
+          "libraryId": "ebg-react-drives-forward",
+          "x": 400,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-slx-n8",
+          "libraryId": "ebg-outside-dump",
+          "x": 400,
+          "y": 600
+        },
+        {
+          "id": "ebg-plan-slx-n9",
+          "libraryId": "seed-headquarters",
+          "x": 280,
+          "y": 720
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-slx-c1",
+          "fromNodeId": "ebg-plan-slx-n1",
+          "toNodeId": "ebg-plan-slx-n2",
+          "label": "sleeve + collar, head close"
+        },
+        {
+          "id": "ebg-plan-slx-c2",
+          "fromNodeId": "ebg-plan-slx-n2",
+          "toNodeId": "ebg-plan-slx-n3",
+          "label": "enter under the leg"
+        },
+        {
+          "id": "ebg-plan-slx-c3",
+          "fromNodeId": "ebg-plan-slx-n3",
+          "toNodeId": "ebg-plan-slx-n4",
+          "label": "only if clearly there"
+        },
+        {
+          "id": "ebg-plan-slx-c4",
+          "fromNodeId": "ebg-plan-slx-n3",
+          "toNodeId": "ebg-plan-slx-n5",
+          "label": "off-balance them"
+        },
+        {
+          "id": "ebg-plan-slx-c5",
+          "fromNodeId": "ebg-plan-slx-n5",
+          "toNodeId": "ebg-plan-slx-n6",
+          "label": "stand with the leg"
+        },
+        {
+          "id": "ebg-plan-slx-c6",
+          "fromNodeId": "ebg-plan-slx-n3",
+          "toNodeId": "ebg-plan-slx-n7",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-slx-c7",
+          "fromNodeId": "ebg-plan-slx-n7",
+          "toNodeId": "ebg-plan-slx-n8",
+          "label": "redirect the knee"
+        },
+        {
+          "id": "ebg-plan-slx-c8",
+          "fromNodeId": "ebg-plan-slx-n6",
+          "toNodeId": "ebg-plan-slx-n9",
+          "label": "come up on top"
+        },
+        {
+          "id": "ebg-plan-slx-c9",
+          "fromNodeId": "ebg-plan-slx-n8",
+          "toNodeId": "ebg-plan-slx-n9",
+          "label": "follow them up"
+        }
+      ]
+    }
+  ]
+}

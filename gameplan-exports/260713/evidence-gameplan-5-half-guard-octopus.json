@@ -1,0 +1,1139 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T11:26:41.561Z",
+  "library": [
+    {
+      "id": "seed-knee-shield",
+      "type": "position",
+      "label": "Knee Shield Half Guard",
+      "notes": [
+        {
+          "text": "Tier-1 bottom hub vs kneeling/pressure opponents. Direction A (they stay square): protect the crossface, underhook, onto your side, dogfight. Direction B (they hip-switch or turn away): clear the arm, sit up, Octopus Guard. The dilemma: face you and give up the underhook game, or turn away and give up Octopus.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [
+        "Z-Guard"
+      ],
+      "variantOf": "seed-half-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-dogfight",
+      "type": "position",
+      "label": "Dogfight",
+      "notes": [
+        {
+          "text": "Reached via the underhook from knee shield (Direction A - they stay square). The key skill is consistently getting the underhook and off your back - the sweeps follow.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-roll-under-sweep",
+      "type": "transition",
+      "label": "Roll-Under Sweep",
+      "notes": [
+        {
+          "text": "Tier 3 - only once the knee tap, old-school and single leg are already reliable.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "ebg-dogfight",
+      "toPositionId": "seed-half-guard-top"
+    },
+    {
+      "id": "ebg-knee-tap",
+      "type": "transition",
+      "label": "Knee Tap",
+      "notes": [
+        {
+          "text": "First dogfight option - when their weight stays over the near knee.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "ebg-dogfight",
+      "toPositionId": "seed-half-guard-top"
+    },
+    {
+      "id": "seed-underhook-sweep",
+      "type": "transition",
+      "label": "Half-Guard Underhook Sweep",
+      "notes": [
+        {
+          "text": "Old-school: take it when their far leg becomes accessible from the dogfight.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [
+        "Old School Sweep"
+      ],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "seed-half-guard",
+      "toPositionId": "seed-half-guard-top"
+    },
+    {
+      "id": "seed-react-stands-up",
+      "type": "reaction",
+      "label": "Stands Up",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent stands up"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-single-leg",
+      "type": "transition",
+      "label": "Single Leg Takedown",
+      "notes": [
+        {
+          "text": "Finish route for the collar drag, the SLX technical stand-up and the Octopus wrestle-up.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-react-turns-away",
+      "type": "reaction",
+      "label": "Turns Away",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent turns away"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-dogfight-back-take",
+      "type": "transition",
+      "label": "Dogfight Back Take",
+      "notes": [
+        {
+          "text": "When they over-whizzer and turn away.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "ebg-dogfight",
+      "toPositionId": "seed-back-control"
+    },
+    {
+      "id": "seed-back-control",
+      "type": "position",
+      "label": "Back Control",
+      "notes": [
+        {
+          "text": "Most decisive position in Gi BJJ. Back exposure produced 38% of all subs at 2022 black-belt Worlds (43% of male black-belt subs in 2026); every athlete who scored back-control points at 2022 Worlds won. Seatbelt + chest-to-back connection first.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "Rear Mount",
+        "Back Mount"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-half-guard-top",
+      "type": "position",
+      "label": "Half Guard Top",
+      "notes": [
+        {
+          "text": "Settle here when the knee cut is blocked. Win the underhook, crossface and head position FIRST - wedges and shoulder pressure over speed.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-headquarters",
+      "type": "position",
+      "label": "Headquarters",
+      "notes": [
+        {
+          "text": "Home base on top. A successful pass was associated with a 99.6% win probability across 1,089 adult black-belt matches. Build the game around getting ONE clean pass.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "HQ"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-de-la-riva",
+      "type": "position",
+      "label": "De La Riva",
+      "notes": [
+        {
+          "text": "Keep it SHALLOW - deep DLR demands hip rotation, hamstring tolerance and inversion that do not fit your attributes. Weight forward -> sideways sweep; controlled leg moves back -> stand-up foot sweep; sits back -> lapel sweep; posts a hand after being pulled -> SLX; knee-cuts or drops a hip beside you -> Octopus.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom",
+        "gi"
+      ],
+      "aliases": [
+        "DLR",
+        "Shallow DLR"
+      ],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-crossface",
+      "type": "reaction",
+      "label": "Attempts Crossface",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent reaches for crossface"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-hip-switch",
+      "type": "reaction",
+      "label": "Hip Switches",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent hip-switches",
+        "Reverse kesa"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-passes-shield",
+      "type": "reaction",
+      "label": "Passes Knee Shield",
+      "notes": [
+        {
+          "text": "They flatten or clear your knee shield and begin coming chest-to-chest. This is an Octopus entry, not a lost guard - keep the half-guard leg, clear the crossface arm, sit up.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent beats the knee shield",
+        "Shield flattened"
+      ],
+      "variantOf": null,
+      "category": "Passing defence",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-clear-crossface",
+      "type": "transition",
+      "label": "Clear Crossface to Octopus",
+      "notes": [
+        {
+          "text": "They drive the crossface arm across without controlling your hips - or they pass/flatten the knee shield and start settling chest-to-chest: do not concede side control. Keep the leg trapped in half guard, clear the arm past your head, sit up, wrap the far lat or belt.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Octopus",
+      "fromPositionId": "seed-knee-shield",
+      "toPositionId": "ebg-octopus"
+    },
+    {
+      "id": "ebg-hip-switch-entry",
+      "type": "transition",
+      "label": "Hip-Switch Octopus Entry",
+      "notes": [
+        {
+          "text": "They hip-switch, reverse-kesa or back-step to pass without controlling your upper body: keep the leg trapped, sit up behind their shoulder line.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Octopus",
+      "fromPositionId": "seed-knee-shield",
+      "toPositionId": "ebg-octopus"
+    },
+    {
+      "id": "ebg-dlr-to-octopus",
+      "type": "transition",
+      "label": "DLR to Octopus",
+      "notes": [
+        {
+          "text": "When the passer knee-cuts or drops a hip beside you to kill DLR: release any foot position that stops you sitting up, keep the near leg, clear the near arm across your body, wrap the far waist or belt. The same passing motion that weakens the DLR hook exposes the Octopus connection.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Octopus",
+      "fromPositionId": "seed-de-la-riva",
+      "toPositionId": "ebg-octopus"
+    },
+    {
+      "id": "ebg-octopus",
+      "type": "position",
+      "label": "Octopus Guard",
+      "notes": [
+        {
+          "text": "Tier-1 reaction guard (Telles; Gi-specific system exists). Available when they hip-switch, turn hips away during a knee cut, reach for a crossface, reverse-kesa or sit heavily beside you. Control checklist: keep one leg trapped in half guard, clear the crossface arm past your centreline, SIT UP (not on your shoulder), wrap the far lat/waist/belt, chest attached to their back or rear shoulder, head above their shoulder, posting hand free. Get behind their shoulder line, not just around the waist. Attack order: 1 back take, 2 kosoto hip-bump, 3 wrestle-up, 4 butterfly sweep, 5 recover knee shield (a branch, not a failure).",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom",
+        "gi"
+      ],
+      "aliases": [
+        "Octopus Half Guard"
+      ],
+      "variantOf": null,
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-squares-back",
+      "type": "reaction",
+      "label": "Squares Back In",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent squares shoulders back"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-stays-low",
+      "type": "reaction",
+      "label": "Stays Low",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent stays low",
+        "Drives backward into you"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-widens-base",
+      "type": "reaction",
+      "label": "Widens Base",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent widens base"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-pulls-away",
+      "type": "reaction",
+      "label": "Pulls Away",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent pulls away",
+        "Disengages"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-steps-over",
+      "type": "reaction",
+      "label": "Steps Over",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent steps across your body"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-react-posts-hand",
+      "type": "reaction",
+      "label": "Posts Hand",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent posts hand"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-raises-hips",
+      "type": "reaction",
+      "label": "Raises Hips",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent raises hips"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-recover-knee-shield",
+      "type": "transition",
+      "label": "Recover Knee Shield",
+      "notes": [
+        {
+          "text": "A branch, not a failure. When they square shoulders back in, win head height, step across your body, break the waist connection or force your shoulders down: do not cling - frame against the shoulder, bring the inside knee back across, rebuild the underhook or wait for the next hip switch. The height battle (head above their shoulder) is what keeps Octopus alive.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Octopus",
+      "fromPositionId": "ebg-octopus",
+      "toPositionId": "seed-knee-shield"
+    },
+    {
+      "id": "ebg-octopus-back-take",
+      "type": "transition",
+      "label": "Octopus Back Take",
+      "notes": [
+        {
+          "text": "Priority 1 - when they turn farther away, lift the near arm, pull out of the wrap, or straighten the trapped knee. Climb your chest higher behind their shoulder, control the far hip or belt, bring your bottom knee behind them, chair-sit or drag their hips toward you, seatbelt. Do NOT throw both hooks immediately if it breaks chest-to-back connection.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "ebg-octopus",
+      "toPositionId": "seed-back-control"
+    },
+    {
+      "id": "ebg-kosoto-hip-bump",
+      "type": "transition",
+      "label": "Kosoto Hip-Bump Sweep",
+      "notes": [
+        {
+          "text": "Primary reversal - when they stay low, drive backward into you, post the far hand or base toward the trapped leg. Outside foot behind their far ankle or calf, post your free hand, raise your hips, pull their upper body toward the wrapping arm, drive the lower body the opposite way. Land in Half Guard Top -> crossface + underhook -> pressure pass.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "ebg-octopus",
+      "toPositionId": "seed-half-guard-top"
+    },
+    {
+      "id": "ebg-butterfly-octopus",
+      "type": "position",
+      "label": "Butterfly Octopus",
+      "notes": [
+        {
+          "text": "Add only after the back take, kosoto and wrestle-up already work. Inside butterfly hook while staying attached around their waist.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": "ebg-octopus",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-octopus-wrestle-up",
+      "type": "transition",
+      "label": "Octopus Wrestle-Up",
+      "notes": [
+        {
+          "text": "When they pull away, raise hips or start standing: maintain waist/belt control, post the free hand, head higher than theirs, release the leg only when you can stand, come up behind their hips or onto a single leg. Same wrestle-up movement as your SLX stand-up and collar-drag systems - one movement, several guards.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "ebg-octopus",
+      "toPositionId": "seed-headquarters"
+    },
+    {
+      "id": "ebg-octopus-butterfly-sweep",
+      "type": "transition",
+      "label": "Octopus Butterfly Sweep",
+      "notes": [
+        {
+          "text": "Secondary (add after the first three attacks work). When they widen the base to stop the hip bump: insert the inside hook, stay attached at the waist, fall toward the posting side, elevate the far thigh, follow up immediately.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "sweep"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Sweeps",
+      "fromPositionId": "ebg-butterfly-octopus",
+      "toPositionId": "seed-half-guard-top"
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-half-guard",
+      "name": "5 · Half Guard & Octopus",
+      "createdAt": "2026-07-12T11:26:41.561Z",
+      "updatedAt": "2026-07-12T11:26:41.561Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-half-guard-n1",
+          "libraryId": "seed-knee-shield",
+          "x": 500,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-half-guard-n2",
+          "libraryId": "ebg-dogfight",
+          "x": 200,
+          "y": 240
+        },
+        {
+          "id": "ebg-plan-half-guard-n3",
+          "libraryId": "ebg-roll-under-sweep",
+          "x": 60,
+          "y": 240
+        },
+        {
+          "id": "ebg-plan-half-guard-n4",
+          "libraryId": "ebg-knee-tap",
+          "x": 60,
+          "y": 380
+        },
+        {
+          "id": "ebg-plan-half-guard-n5",
+          "libraryId": "seed-underhook-sweep",
+          "x": 200,
+          "y": 380
+        },
+        {
+          "id": "ebg-plan-half-guard-n6",
+          "libraryId": "seed-react-stands-up",
+          "x": 310,
+          "y": 320
+        },
+        {
+          "id": "ebg-plan-half-guard-n7",
+          "libraryId": "seed-single-leg",
+          "x": 310,
+          "y": 450
+        },
+        {
+          "id": "ebg-plan-half-guard-n8",
+          "libraryId": "seed-react-turns-away",
+          "x": 90,
+          "y": 520
+        },
+        {
+          "id": "ebg-plan-half-guard-n9",
+          "libraryId": "ebg-dogfight-back-take",
+          "x": 90,
+          "y": 650
+        },
+        {
+          "id": "ebg-plan-half-guard-n10",
+          "libraryId": "seed-back-control",
+          "x": 90,
+          "y": 780
+        },
+        {
+          "id": "ebg-plan-half-guard-n11",
+          "libraryId": "seed-half-guard-top",
+          "x": 250,
+          "y": 560
+        },
+        {
+          "id": "ebg-plan-half-guard-n12",
+          "libraryId": "seed-headquarters",
+          "x": 330,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n13",
+          "libraryId": "seed-de-la-riva",
+          "x": 960,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-half-guard-n14",
+          "libraryId": "ebg-react-crossface",
+          "x": 410,
+          "y": 200
+        },
+        {
+          "id": "ebg-plan-half-guard-n15",
+          "libraryId": "ebg-react-hip-switch",
+          "x": 590,
+          "y": 200
+        },
+        {
+          "id": "ebg-plan-half-guard-n16",
+          "libraryId": "ebg-react-passes-shield",
+          "x": 740,
+          "y": 200
+        },
+        {
+          "id": "ebg-plan-half-guard-n17",
+          "libraryId": "ebg-clear-crossface",
+          "x": 410,
+          "y": 320
+        },
+        {
+          "id": "ebg-plan-half-guard-n18",
+          "libraryId": "ebg-hip-switch-entry",
+          "x": 590,
+          "y": 320
+        },
+        {
+          "id": "ebg-plan-half-guard-n19",
+          "libraryId": "ebg-dlr-to-octopus",
+          "x": 960,
+          "y": 320
+        },
+        {
+          "id": "ebg-plan-half-guard-n20",
+          "libraryId": "ebg-octopus",
+          "x": 730,
+          "y": 450
+        },
+        {
+          "id": "ebg-plan-half-guard-n21",
+          "libraryId": "ebg-react-squares-back",
+          "x": 430,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n22",
+          "libraryId": "seed-react-turns-away",
+          "x": 580,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n23",
+          "libraryId": "ebg-react-stays-low",
+          "x": 730,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n24",
+          "libraryId": "ebg-react-widens-base",
+          "x": 880,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n25",
+          "libraryId": "ebg-react-pulls-away",
+          "x": 1030,
+          "y": 620
+        },
+        {
+          "id": "ebg-plan-half-guard-n26",
+          "libraryId": "ebg-react-steps-over",
+          "x": 505,
+          "y": 690
+        },
+        {
+          "id": "ebg-plan-half-guard-n27",
+          "libraryId": "seed-react-posts-hand",
+          "x": 805,
+          "y": 690
+        },
+        {
+          "id": "ebg-plan-half-guard-n28",
+          "libraryId": "ebg-react-raises-hips",
+          "x": 1105,
+          "y": 690
+        },
+        {
+          "id": "ebg-plan-half-guard-n29",
+          "libraryId": "ebg-recover-knee-shield",
+          "x": 430,
+          "y": 760
+        },
+        {
+          "id": "ebg-plan-half-guard-n30",
+          "libraryId": "ebg-octopus-back-take",
+          "x": 580,
+          "y": 760
+        },
+        {
+          "id": "ebg-plan-half-guard-n31",
+          "libraryId": "ebg-kosoto-hip-bump",
+          "x": 730,
+          "y": 760
+        },
+        {
+          "id": "ebg-plan-half-guard-n32",
+          "libraryId": "ebg-butterfly-octopus",
+          "x": 880,
+          "y": 760
+        },
+        {
+          "id": "ebg-plan-half-guard-n33",
+          "libraryId": "ebg-octopus-wrestle-up",
+          "x": 1030,
+          "y": 760
+        },
+        {
+          "id": "ebg-plan-half-guard-n34",
+          "libraryId": "seed-knee-shield",
+          "x": 430,
+          "y": 900
+        },
+        {
+          "id": "ebg-plan-half-guard-n35",
+          "libraryId": "seed-back-control",
+          "x": 580,
+          "y": 900
+        },
+        {
+          "id": "ebg-plan-half-guard-n36",
+          "libraryId": "seed-half-guard-top",
+          "x": 730,
+          "y": 900
+        },
+        {
+          "id": "ebg-plan-half-guard-n37",
+          "libraryId": "ebg-octopus-butterfly-sweep",
+          "x": 880,
+          "y": 880
+        },
+        {
+          "id": "ebg-plan-half-guard-n38",
+          "libraryId": "seed-single-leg",
+          "x": 1030,
+          "y": 900
+        },
+        {
+          "id": "ebg-plan-half-guard-n39",
+          "libraryId": "seed-headquarters",
+          "x": 910,
+          "y": 1010
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-half-guard-c1",
+          "fromNodeId": "ebg-plan-half-guard-n1",
+          "toNodeId": "ebg-plan-half-guard-n2",
+          "label": "A: square → underhook"
+        },
+        {
+          "id": "ebg-plan-half-guard-c2",
+          "fromNodeId": "ebg-plan-half-guard-n2",
+          "toNodeId": "ebg-plan-half-guard-n4",
+          "label": "weight on near knee"
+        },
+        {
+          "id": "ebg-plan-half-guard-c3",
+          "fromNodeId": "ebg-plan-half-guard-n2",
+          "toNodeId": "ebg-plan-half-guard-n5",
+          "label": "far leg reachable"
+        },
+        {
+          "id": "ebg-plan-half-guard-c4",
+          "fromNodeId": "ebg-plan-half-guard-n2",
+          "toNodeId": "ebg-plan-half-guard-n6",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c5",
+          "fromNodeId": "ebg-plan-half-guard-n6",
+          "toNodeId": "ebg-plan-half-guard-n7",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c6",
+          "fromNodeId": "ebg-plan-half-guard-n2",
+          "toNodeId": "ebg-plan-half-guard-n8",
+          "label": "over-whizzers"
+        },
+        {
+          "id": "ebg-plan-half-guard-c7",
+          "fromNodeId": "ebg-plan-half-guard-n8",
+          "toNodeId": "ebg-plan-half-guard-n9",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c8",
+          "fromNodeId": "ebg-plan-half-guard-n9",
+          "toNodeId": "ebg-plan-half-guard-n10",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c9",
+          "fromNodeId": "ebg-plan-half-guard-n2",
+          "toNodeId": "ebg-plan-half-guard-n3",
+          "label": "last resort"
+        },
+        {
+          "id": "ebg-plan-half-guard-c10",
+          "fromNodeId": "ebg-plan-half-guard-n4",
+          "toNodeId": "ebg-plan-half-guard-n11",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c11",
+          "fromNodeId": "ebg-plan-half-guard-n5",
+          "toNodeId": "ebg-plan-half-guard-n11",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c12",
+          "fromNodeId": "ebg-plan-half-guard-n3",
+          "toNodeId": "ebg-plan-half-guard-n11",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c13",
+          "fromNodeId": "ebg-plan-half-guard-n7",
+          "toNodeId": "ebg-plan-half-guard-n12",
+          "label": "on top"
+        },
+        {
+          "id": "ebg-plan-half-guard-c14",
+          "fromNodeId": "ebg-plan-half-guard-n11",
+          "toNodeId": "ebg-plan-half-guard-n12",
+          "label": "pressure pass"
+        },
+        {
+          "id": "ebg-plan-half-guard-c15",
+          "fromNodeId": "ebg-plan-half-guard-n1",
+          "toNodeId": "ebg-plan-half-guard-n14",
+          "label": "B: drives arm across"
+        },
+        {
+          "id": "ebg-plan-half-guard-c16",
+          "fromNodeId": "ebg-plan-half-guard-n1",
+          "toNodeId": "ebg-plan-half-guard-n15",
+          "label": "B: hip-switch / kesa"
+        },
+        {
+          "id": "ebg-plan-half-guard-c17",
+          "fromNodeId": "ebg-plan-half-guard-n1",
+          "toNodeId": "ebg-plan-half-guard-n16",
+          "label": "B: flattens the shield"
+        },
+        {
+          "id": "ebg-plan-half-guard-c18",
+          "fromNodeId": "ebg-plan-half-guard-n14",
+          "toNodeId": "ebg-plan-half-guard-n17",
+          "label": "clear past your head"
+        },
+        {
+          "id": "ebg-plan-half-guard-c19",
+          "fromNodeId": "ebg-plan-half-guard-n16",
+          "toNodeId": "ebg-plan-half-guard-n17",
+          "label": "keep the half-guard leg"
+        },
+        {
+          "id": "ebg-plan-half-guard-c20",
+          "fromNodeId": "ebg-plan-half-guard-n15",
+          "toNodeId": "ebg-plan-half-guard-n18",
+          "label": "sit up"
+        },
+        {
+          "id": "ebg-plan-half-guard-c21",
+          "fromNodeId": "ebg-plan-half-guard-n17",
+          "toNodeId": "ebg-plan-half-guard-n20",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c22",
+          "fromNodeId": "ebg-plan-half-guard-n18",
+          "toNodeId": "ebg-plan-half-guard-n20",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c23",
+          "fromNodeId": "ebg-plan-half-guard-n13",
+          "toNodeId": "ebg-plan-half-guard-n19",
+          "label": "knee cut / hip drops beside you"
+        },
+        {
+          "id": "ebg-plan-half-guard-c24",
+          "fromNodeId": "ebg-plan-half-guard-n19",
+          "toNodeId": "ebg-plan-half-guard-n20",
+          "label": "wrap far waist or belt"
+        },
+        {
+          "id": "ebg-plan-half-guard-c25",
+          "fromNodeId": "ebg-plan-half-guard-n20",
+          "toNodeId": "ebg-plan-half-guard-n22",
+          "label": "1: turns farther"
+        },
+        {
+          "id": "ebg-plan-half-guard-c26",
+          "fromNodeId": "ebg-plan-half-guard-n22",
+          "toNodeId": "ebg-plan-half-guard-n30",
+          "label": "chest high, chair-sit"
+        },
+        {
+          "id": "ebg-plan-half-guard-c27",
+          "fromNodeId": "ebg-plan-half-guard-n30",
+          "toNodeId": "ebg-plan-half-guard-n35",
+          "label": "seatbelt before hooks"
+        },
+        {
+          "id": "ebg-plan-half-guard-c28",
+          "fromNodeId": "ebg-plan-half-guard-n20",
+          "toNodeId": "ebg-plan-half-guard-n23",
+          "label": "2: stays low"
+        },
+        {
+          "id": "ebg-plan-half-guard-c29",
+          "fromNodeId": "ebg-plan-half-guard-n23",
+          "toNodeId": "ebg-plan-half-guard-n31",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c30",
+          "fromNodeId": "ebg-plan-half-guard-n27",
+          "toNodeId": "ebg-plan-half-guard-n31",
+          "label": "same cue"
+        },
+        {
+          "id": "ebg-plan-half-guard-c31",
+          "fromNodeId": "ebg-plan-half-guard-n31",
+          "toNodeId": "ebg-plan-half-guard-n36",
+          "label": "come up on top"
+        },
+        {
+          "id": "ebg-plan-half-guard-c32",
+          "fromNodeId": "ebg-plan-half-guard-n20",
+          "toNodeId": "ebg-plan-half-guard-n25",
+          "label": "3: pulls away"
+        },
+        {
+          "id": "ebg-plan-half-guard-c33",
+          "fromNodeId": "ebg-plan-half-guard-n25",
+          "toNodeId": "ebg-plan-half-guard-n33",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c34",
+          "fromNodeId": "ebg-plan-half-guard-n28",
+          "toNodeId": "ebg-plan-half-guard-n33",
+          "label": "same cue"
+        },
+        {
+          "id": "ebg-plan-half-guard-c35",
+          "fromNodeId": "ebg-plan-half-guard-n33",
+          "toNodeId": "ebg-plan-half-guard-n38",
+          "label": "or behind their hips"
+        },
+        {
+          "id": "ebg-plan-half-guard-c36",
+          "fromNodeId": "ebg-plan-half-guard-n38",
+          "toNodeId": "ebg-plan-half-guard-n39",
+          "label": "finish takedown"
+        },
+        {
+          "id": "ebg-plan-half-guard-c37",
+          "fromNodeId": "ebg-plan-half-guard-n20",
+          "toNodeId": "ebg-plan-half-guard-n24",
+          "label": "4: widens base"
+        },
+        {
+          "id": "ebg-plan-half-guard-c38",
+          "fromNodeId": "ebg-plan-half-guard-n24",
+          "toNodeId": "ebg-plan-half-guard-n32",
+          "label": "inside hook, stay attached"
+        },
+        {
+          "id": "ebg-plan-half-guard-c39",
+          "fromNodeId": "ebg-plan-half-guard-n32",
+          "toNodeId": "ebg-plan-half-guard-n37",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c40",
+          "fromNodeId": "ebg-plan-half-guard-n37",
+          "toNodeId": "ebg-plan-half-guard-n36",
+          "label": "follow up immediately"
+        },
+        {
+          "id": "ebg-plan-half-guard-c41",
+          "fromNodeId": "ebg-plan-half-guard-n20",
+          "toNodeId": "ebg-plan-half-guard-n21",
+          "label": "5: don't cling"
+        },
+        {
+          "id": "ebg-plan-half-guard-c42",
+          "fromNodeId": "ebg-plan-half-guard-n21",
+          "toNodeId": "ebg-plan-half-guard-n29",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-half-guard-c43",
+          "fromNodeId": "ebg-plan-half-guard-n26",
+          "toNodeId": "ebg-plan-half-guard-n29",
+          "label": "same cue"
+        },
+        {
+          "id": "ebg-plan-half-guard-c44",
+          "fromNodeId": "ebg-plan-half-guard-n29",
+          "toNodeId": "ebg-plan-half-guard-n34",
+          "label": "rebuild underhook"
+        }
+      ]
+    }
+  ]
+}

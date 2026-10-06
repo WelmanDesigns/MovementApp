@@ -1,0 +1,477 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T21:19:39.060Z",
+  "library": [
+    {
+      "id": "seed-headquarters",
+      "type": "position",
+      "label": "Headquarters",
+      "notes": [
+        {
+          "text": "Home base on top. A successful pass was associated with a 99.6% win probability across 1,089 adult black-belt matches. Build the game around getting ONE clean pass. If they pull guard first, enter here immediately and start passing - no separate decision needed.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "HQ"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-toreando",
+      "type": "transition",
+      "label": "Toreando Pass",
+      "notes": [
+        {
+          "text": "Opening threat: 89% success rate at blue belt. Its main job is to make them turn, retract legs or expose inside position - not always to finish directly.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "pass"
+      ],
+      "aliases": [
+        "Bullfighter Pass"
+      ],
+      "variantOf": null,
+      "category": "Passing",
+      "fromPositionId": null,
+      "toPositionId": "seed-side-control"
+    },
+    {
+      "id": "seed-react-turns-in",
+      "type": "reaction",
+      "label": "Turns In",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent turns in"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-knee-cut",
+      "type": "transition",
+      "label": "Knee Cut Pass",
+      "notes": [
+        {
+          "text": "Central pass: 27.3% of successful elite passes (largest single pass), ~69% success at blue belt. Chain it - at 2022 Worlds 12 were finished vs 9 passers swept when forced. Win the underhook and far-side sleeve before committing.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "pass"
+      ],
+      "aliases": [
+        "Knee Slice"
+      ],
+      "variantOf": null,
+      "category": "Passing",
+      "fromPositionId": "seed-headquarters",
+      "toPositionId": "seed-side-control"
+    },
+    {
+      "id": "ebg-react-traps-leg",
+      "type": "reaction",
+      "label": "Traps Your Leg",
+      "notes": [
+        {
+          "text": "Do not force the knee cut from broken balance - settle chest-to-chest half guard and win the underhook.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent traps leg in half guard"
+      ],
+      "variantOf": null,
+      "category": "Passing defence",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-half-guard-top",
+      "type": "position",
+      "label": "Half Guard Top",
+      "notes": [
+        {
+          "text": "Settle here when the knee cut is blocked. Win the underhook, crossface and head position FIRST - wedges and shoulder pressure over speed.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-half-guard-pass",
+      "type": "transition",
+      "label": "Half-Guard Pass",
+      "notes": [
+        {
+          "text": "Stabilising option: chest-to-chest pressure passing was the 2nd-largest clearly identified elite pass category. Crossface + underhook, flatten their hips, free the knee, free the foot last.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "pass"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Passing",
+      "fromPositionId": "seed-half-guard-top",
+      "toPositionId": "seed-side-control"
+    },
+    {
+      "id": "seed-side-control",
+      "type": "position",
+      "label": "Side Control",
+      "notes": [
+        {
+          "text": "Stay heavy. They stay flat -> mount. They turn or turtle -> seatbelt -> back control. (Knee ride returns later as an option.)",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "Side Mount",
+        "Cross Side"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-knee-on-belly",
+      "type": "position",
+      "label": "Knee on Belly",
+      "notes": [
+        {
+          "text": "Downstream finishing position, not part of your guard identity. From your Knee Ride plan: tricep control -> cross collar; arm behind armpit -> forward armbar; arm in front -> rearward armbar; pants grip -> scoop far arm -> armbar; turns away -> technical mount or back. Baseball/Canto chokes stay available but never outrank position or the armbar.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "KOB",
+        "Knee Ride"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-mount",
+      "type": "position",
+      "label": "Mount",
+      "notes": [
+        {
+          "text": "Second scoring layer after the pass. Cross-collar choke and armbar live here.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-react-turtles",
+      "type": "reaction",
+      "label": "Turtles",
+      "notes": [],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent turtles"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-turtle-top",
+      "type": "position",
+      "label": "Turtle Top",
+      "notes": [
+        {
+          "text": "Do not chase side control when they turtle.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-turtle-back-take",
+      "type": "transition",
+      "label": "Turtle Back Take",
+      "notes": [
+        {
+          "text": "Seatbelt first, then take the back. Half of the back takes at 2022 Worlds originated while the top player was passing.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "seed-turtle-top",
+      "toPositionId": "seed-back-control"
+    },
+    {
+      "id": "seed-back-control",
+      "type": "position",
+      "label": "Back Control",
+      "notes": [
+        {
+          "text": "Most decisive position in Gi BJJ. Back exposure produced 38% of all subs at 2022 black-belt Worlds (43% of male black-belt subs in 2026); every athlete who scored back-control points at 2022 Worlds won. Seatbelt + chest-to-back connection first.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "Rear Mount",
+        "Back Mount"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-passing",
+      "name": "4 · Pressure Passing (Full)",
+      "createdAt": "2026-07-12T21:19:39.060Z",
+      "updatedAt": "2026-07-12T21:19:39.060Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-passing-n1",
+          "libraryId": "seed-headquarters",
+          "x": 260,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-passing-n2",
+          "libraryId": "seed-toreando",
+          "x": 260,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-passing-n3",
+          "libraryId": "seed-react-turns-in",
+          "x": 260,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-passing-n4",
+          "libraryId": "seed-knee-cut",
+          "x": 260,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-passing-n5",
+          "libraryId": "ebg-react-traps-leg",
+          "x": 110,
+          "y": 560
+        },
+        {
+          "id": "ebg-plan-passing-n6",
+          "libraryId": "seed-half-guard-top",
+          "x": 110,
+          "y": 690
+        },
+        {
+          "id": "ebg-plan-passing-n7",
+          "libraryId": "seed-half-guard-pass",
+          "x": 110,
+          "y": 820
+        },
+        {
+          "id": "ebg-plan-passing-n8",
+          "libraryId": "seed-side-control",
+          "x": 280,
+          "y": 820
+        },
+        {
+          "id": "ebg-plan-passing-n9",
+          "libraryId": "seed-knee-on-belly",
+          "x": 150,
+          "y": 950
+        },
+        {
+          "id": "ebg-plan-passing-n10",
+          "libraryId": "seed-mount",
+          "x": 280,
+          "y": 950
+        },
+        {
+          "id": "ebg-plan-passing-n11",
+          "libraryId": "seed-react-turtles",
+          "x": 430,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-passing-n12",
+          "libraryId": "seed-turtle-top",
+          "x": 430,
+          "y": 600
+        },
+        {
+          "id": "ebg-plan-passing-n13",
+          "libraryId": "seed-turtle-back-take",
+          "x": 430,
+          "y": 730
+        },
+        {
+          "id": "ebg-plan-passing-n14",
+          "libraryId": "seed-back-control",
+          "x": 430,
+          "y": 860
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-passing-c1",
+          "fromNodeId": "ebg-plan-passing-n1",
+          "toNodeId": "ebg-plan-passing-n2",
+          "label": "threaten first"
+        },
+        {
+          "id": "ebg-plan-passing-c2",
+          "fromNodeId": "ebg-plan-passing-n2",
+          "toNodeId": "ebg-plan-passing-n3",
+          "label": "turns / knee inside"
+        },
+        {
+          "id": "ebg-plan-passing-c3",
+          "fromNodeId": "ebg-plan-passing-n3",
+          "toNodeId": "ebg-plan-passing-n4",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-passing-c4",
+          "fromNodeId": "ebg-plan-passing-n4",
+          "toNodeId": "ebg-plan-passing-n8",
+          "label": "underhook + far sleeve"
+        },
+        {
+          "id": "ebg-plan-passing-c5",
+          "fromNodeId": "ebg-plan-passing-n4",
+          "toNodeId": "ebg-plan-passing-n5",
+          "label": "leg trapped"
+        },
+        {
+          "id": "ebg-plan-passing-c6",
+          "fromNodeId": "ebg-plan-passing-n5",
+          "toNodeId": "ebg-plan-passing-n6",
+          "label": "crossface + underhook"
+        },
+        {
+          "id": "ebg-plan-passing-c7",
+          "fromNodeId": "ebg-plan-passing-n6",
+          "toNodeId": "ebg-plan-passing-n7",
+          "label": "flatten hips"
+        },
+        {
+          "id": "ebg-plan-passing-c8",
+          "fromNodeId": "ebg-plan-passing-n7",
+          "toNodeId": "ebg-plan-passing-n8",
+          "label": "knee free, foot last"
+        },
+        {
+          "id": "ebg-plan-passing-c9",
+          "fromNodeId": "ebg-plan-passing-n8",
+          "toNodeId": "ebg-plan-passing-n10",
+          "label": "they stay flat"
+        },
+        {
+          "id": "ebg-plan-passing-c10",
+          "fromNodeId": "ebg-plan-passing-n8",
+          "toNodeId": "ebg-plan-passing-n9",
+          "label": "or knee ride"
+        },
+        {
+          "id": "ebg-plan-passing-c11",
+          "fromNodeId": "ebg-plan-passing-n4",
+          "toNodeId": "ebg-plan-passing-n11",
+          "label": "turtles mid-pass"
+        },
+        {
+          "id": "ebg-plan-passing-c12",
+          "fromNodeId": "ebg-plan-passing-n11",
+          "toNodeId": "ebg-plan-passing-n12",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-passing-c13",
+          "fromNodeId": "ebg-plan-passing-n12",
+          "toNodeId": "ebg-plan-passing-n13",
+          "label": "seatbelt first"
+        },
+        {
+          "id": "ebg-plan-passing-c14",
+          "fromNodeId": "ebg-plan-passing-n13",
+          "toNodeId": "ebg-plan-passing-n14",
+          "label": "not side control"
+        }
+      ]
+    }
+  ]
+}

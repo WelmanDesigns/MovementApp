@@ -1,0 +1,490 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T11:26:41.561Z",
+  "library": [
+    {
+      "id": "seed-standing",
+      "type": "position",
+      "label": "Neutral Standing",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "neutral"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Standing",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-grip-fighting-range",
+      "type": "position",
+      "label": "Grip-Fighting Range",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "neutral",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Standing",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-no-grips",
+      "type": "reaction",
+      "label": "No Useful Grips",
+      "notes": [
+        {
+          "text": "Do not hand-fight for minutes without a clear route - pull guard on purpose instead.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Cannot establish grips"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-guard-pull",
+      "type": "transition",
+      "label": "Guard Pull",
+      "notes": [
+        {
+          "text": "Guard pulls established guard 94% of the time at lower belts - but only pull when you land somewhere useful: they stay standing -> Shallow DLR or shin-to-shin; they kneel -> knee shield; they hip-switch immediately -> Octopus.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "guard-pull"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": "seed-closed-guard"
+    },
+    {
+      "id": "seed-seated-guard",
+      "type": "position",
+      "label": "Seated Guard",
+      "notes": [
+        {
+          "text": "Start seated, never flat. One sleeve or two-on-one, collar grip where available, shin-to-shin, head close to their hip or ribs.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-de-la-riva",
+      "type": "position",
+      "label": "De La Riva",
+      "notes": [
+        {
+          "text": "Keep it SHALLOW - deep DLR demands hip rotation, hamstring tolerance and inversion that do not fit your attributes. Weight forward -> sideways sweep; controlled leg moves back -> stand-up foot sweep; sits back -> lapel sweep; posts a hand after being pulled -> SLX; knee-cuts or drops a hip beside you -> Octopus.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom",
+        "gi"
+      ],
+      "aliases": [
+        "DLR",
+        "Shallow DLR"
+      ],
+      "variantOf": "seed-open-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-knee-shield",
+      "type": "position",
+      "label": "Knee Shield Half Guard",
+      "notes": [
+        {
+          "text": "Tier-1 bottom hub vs kneeling/pressure opponents. Direction A (they stay square): protect the crossface, underhook, onto your side, dogfight. Direction B (they hip-switch or turn away): clear the arm, sit up, Octopus Guard. The dilemma: face you and give up the underhook game, or turn away and give up Octopus.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom"
+      ],
+      "aliases": [
+        "Z-Guard"
+      ],
+      "variantOf": "seed-half-guard",
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-octopus",
+      "type": "position",
+      "label": "Octopus Guard",
+      "notes": [
+        {
+          "text": "Tier-1 reaction guard (Telles; Gi-specific system exists). Available when they hip-switch, turn hips away during a knee cut, reach for a crossface, reverse-kesa or sit heavily beside you. Control checklist: keep one leg trapped in half guard, clear the crossface arm past your centreline, SIT UP (not on your shoulder), wrap the far lat/waist/belt, chest attached to their back or rear shoulder, head above their shoulder, posting hand free. Get behind their shoulder line, not just around the waist. Attack order: 1 back take, 2 kosoto hip-bump, 3 wrestle-up, 4 butterfly sweep, 5 recover knee shield (a branch, not a failure).",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "bottom",
+        "gi"
+      ],
+      "aliases": [
+        "Octopus Half Guard"
+      ],
+      "variantOf": null,
+      "category": "Guards",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-foot-sweep",
+      "type": "transition",
+      "label": "Foot Sweep",
+      "notes": [
+        {
+          "text": "First standing attack. Foot sweeps fit the bent, grip-heavy posture of Gi BJJ. You need one reliable foot sweep, not a broad judo repertoire.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown",
+        "gi"
+      ],
+      "aliases": [
+        "De Ashi Barai"
+      ],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-grip-fighting-range",
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-collar-drag",
+      "type": "transition",
+      "label": "Collar Drag",
+      "notes": [
+        {
+          "text": "Second standing attack - drag into a single leg.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-grip-fighting-range",
+      "toPositionId": "seed-single-leg-x"
+    },
+    {
+      "id": "seed-ankle-pick",
+      "type": "transition",
+      "label": "Ankle Pick",
+      "notes": [
+        {
+          "text": "Use when they pull their hips back. Elite takedowns happen in only ~14% of matches, but the scorer won 88% of those.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-grip-fighting-range",
+      "toPositionId": null
+    },
+    {
+      "id": "seed-single-leg",
+      "type": "transition",
+      "label": "Single Leg Takedown",
+      "notes": [
+        {
+          "text": "Finish route for the collar drag, the SLX technical stand-up and the Octopus wrestle-up.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "takedown"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Takedowns & standing",
+      "fromPositionId": "seed-standing",
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-react-pulls-guard",
+      "type": "reaction",
+      "label": "Pulls Guard",
+      "notes": [
+        {
+          "text": "Best possible standing outcome for you: accept top and begin passing immediately.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [],
+      "aliases": [
+        "Opponent pulls guard"
+      ],
+      "variantOf": null,
+      "category": "General reactions",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-headquarters",
+      "type": "position",
+      "label": "Headquarters",
+      "notes": [
+        {
+          "text": "Home base on top. A successful pass was associated with a 99.6% win probability across 1,089 adult black-belt matches. Build the game around getting ONE clean pass.",
+          "createdAt": "2026-07-12T11:26:41.561Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "HQ"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-standing",
+      "name": "1 · Standing Game",
+      "createdAt": "2026-07-12T11:26:41.561Z",
+      "updatedAt": "2026-07-12T11:26:41.561Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-standing-n1",
+          "libraryId": "seed-standing",
+          "x": 280,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-standing-n2",
+          "libraryId": "seed-grip-fighting-range",
+          "x": 280,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-standing-n3",
+          "libraryId": "ebg-react-no-grips",
+          "x": 70,
+          "y": 210
+        },
+        {
+          "id": "ebg-plan-standing-n4",
+          "libraryId": "seed-guard-pull",
+          "x": 70,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n5",
+          "libraryId": "seed-seated-guard",
+          "x": 60,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-standing-n6",
+          "libraryId": "seed-de-la-riva",
+          "x": 60,
+          "y": 610
+        },
+        {
+          "id": "ebg-plan-standing-n7",
+          "libraryId": "seed-knee-shield",
+          "x": 150,
+          "y": 600
+        },
+        {
+          "id": "ebg-plan-standing-n8",
+          "libraryId": "ebg-octopus",
+          "x": 240,
+          "y": 710
+        },
+        {
+          "id": "ebg-plan-standing-n9",
+          "libraryId": "ebg-foot-sweep",
+          "x": 180,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n10",
+          "libraryId": "ebg-collar-drag",
+          "x": 320,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n11",
+          "libraryId": "seed-ankle-pick",
+          "x": 450,
+          "y": 340
+        },
+        {
+          "id": "ebg-plan-standing-n12",
+          "libraryId": "seed-single-leg",
+          "x": 320,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-standing-n13",
+          "libraryId": "ebg-react-pulls-guard",
+          "x": 480,
+          "y": 470
+        },
+        {
+          "id": "ebg-plan-standing-n14",
+          "libraryId": "seed-headquarters",
+          "x": 320,
+          "y": 600
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-standing-c1",
+          "fromNodeId": "ebg-plan-standing-n1",
+          "toNodeId": "ebg-plan-standing-n2",
+          "label": "collar + sleeve"
+        },
+        {
+          "id": "ebg-plan-standing-c2",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n9",
+          "label": "attack 1"
+        },
+        {
+          "id": "ebg-plan-standing-c3",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n10",
+          "label": "attack 2"
+        },
+        {
+          "id": "ebg-plan-standing-c4",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n11",
+          "label": "hips pull back"
+        },
+        {
+          "id": "ebg-plan-standing-c5",
+          "fromNodeId": "ebg-plan-standing-n10",
+          "toNodeId": "ebg-plan-standing-n12",
+          "label": "drag to the leg"
+        },
+        {
+          "id": "ebg-plan-standing-c6",
+          "fromNodeId": "ebg-plan-standing-n9",
+          "toNodeId": "ebg-plan-standing-n14",
+          "label": "stay on top"
+        },
+        {
+          "id": "ebg-plan-standing-c7",
+          "fromNodeId": "ebg-plan-standing-n12",
+          "toNodeId": "ebg-plan-standing-n14",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-standing-c8",
+          "fromNodeId": "ebg-plan-standing-n11",
+          "toNodeId": "ebg-plan-standing-n14",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-standing-c9",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n13",
+          "label": ""
+        },
+        {
+          "id": "ebg-plan-standing-c10",
+          "fromNodeId": "ebg-plan-standing-n13",
+          "toNodeId": "ebg-plan-standing-n14",
+          "label": "accept top"
+        },
+        {
+          "id": "ebg-plan-standing-c11",
+          "fromNodeId": "ebg-plan-standing-n2",
+          "toNodeId": "ebg-plan-standing-n3",
+          "label": "no clear route"
+        },
+        {
+          "id": "ebg-plan-standing-c12",
+          "fromNodeId": "ebg-plan-standing-n3",
+          "toNodeId": "ebg-plan-standing-n4",
+          "label": "pull with purpose"
+        },
+        {
+          "id": "ebg-plan-standing-c13",
+          "fromNodeId": "ebg-plan-standing-n4",
+          "toNodeId": "ebg-plan-standing-n5",
+          "label": "vs standing · shin-to-shin"
+        },
+        {
+          "id": "ebg-plan-standing-c14",
+          "fromNodeId": "ebg-plan-standing-n5",
+          "toNodeId": "ebg-plan-standing-n6",
+          "label": "they stay square"
+        },
+        {
+          "id": "ebg-plan-standing-c15",
+          "fromNodeId": "ebg-plan-standing-n4",
+          "toNodeId": "ebg-plan-standing-n7",
+          "label": "vs kneeling"
+        },
+        {
+          "id": "ebg-plan-standing-c16",
+          "fromNodeId": "ebg-plan-standing-n7",
+          "toNodeId": "ebg-plan-standing-n8",
+          "label": "they hip-switch"
+        }
+      ]
+    }
+  ]
+}

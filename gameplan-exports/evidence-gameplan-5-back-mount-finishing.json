@@ -1,0 +1,218 @@
+{
+  "app": "MovementApp",
+  "version": 1,
+  "exportedAt": "2026-07-12T21:19:39.060Z",
+  "library": [
+    {
+      "id": "seed-back-control",
+      "type": "position",
+      "label": "Back Control",
+      "notes": [
+        {
+          "text": "Most decisive position in Gi BJJ. Back exposure produced 38% of all subs at 2022 black-belt Worlds (43% of male black-belt subs in 2026); every athlete who scored back-control points at 2022 Worlds won. Seatbelt + chest-to-back connection first.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [
+        "Rear Mount",
+        "Back Mount"
+      ],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-bow-and-arrow",
+      "type": "submission",
+      "label": "Bow-and-Arrow Choke",
+      "notes": [
+        {
+          "text": "Primary finish. Rear chokes had the highest recorded success rate at white/blue belt (~75%). Establish the collar grip before trying to open the neck.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "choke",
+        "gi"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Chokes",
+      "fromPositionId": "seed-back-control",
+      "toPositionId": null
+    },
+    {
+      "id": "ebg-trap-arm-switch",
+      "type": "transition",
+      "label": "Trap Arm & Switch Sides",
+      "notes": [
+        {
+          "text": "When they defend the choking arm: trap an arm, switch sides, re-attack the collar.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "back-take"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Back takes",
+      "fromPositionId": "seed-back-control",
+      "toPositionId": "seed-back-control"
+    },
+    {
+      "id": "seed-mount",
+      "type": "position",
+      "label": "Mount",
+      "notes": [
+        {
+          "text": "Second scoring layer after the pass. Cross-collar choke and armbar live here.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": null,
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-cross-collar",
+      "type": "submission",
+      "label": "Cross-Collar Choke",
+      "notes": [
+        {
+          "text": "Main mount attack.",
+          "createdAt": "2026-07-12T21:19:39.060Z"
+        }
+      ],
+      "links": [],
+      "tags": [
+        "choke",
+        "gi"
+      ],
+      "aliases": [
+        "X-Choke"
+      ],
+      "variantOf": null,
+      "category": "Chokes",
+      "fromPositionId": null,
+      "toPositionId": null
+    },
+    {
+      "id": "seed-technical-mount",
+      "type": "position",
+      "label": "Technical Mount",
+      "notes": [],
+      "links": [],
+      "tags": [
+        "top"
+      ],
+      "aliases": [],
+      "variantOf": "seed-mount",
+      "category": "Top control",
+      "fromPositionId": null,
+      "toPositionId": null
+    }
+  ],
+  "gameplans": [
+    {
+      "id": "ebg-plan-finishing",
+      "name": "5 · Back & Mount Finishing",
+      "createdAt": "2026-07-12T21:19:39.060Z",
+      "updatedAt": "2026-07-12T21:19:39.060Z",
+      "viewport": {
+        "x": 10,
+        "y": 10,
+        "zoom": 0.7
+      },
+      "nodes": [
+        {
+          "id": "ebg-plan-finishing-n1",
+          "libraryId": "seed-back-control",
+          "x": 200,
+          "y": 80
+        },
+        {
+          "id": "ebg-plan-finishing-n2",
+          "libraryId": "seed-bow-and-arrow",
+          "x": 110,
+          "y": 220
+        },
+        {
+          "id": "ebg-plan-finishing-n3",
+          "libraryId": "ebg-trap-arm-switch",
+          "x": 320,
+          "y": 220
+        },
+        {
+          "id": "ebg-plan-finishing-n4",
+          "libraryId": "seed-mount",
+          "x": 200,
+          "y": 380
+        },
+        {
+          "id": "ebg-plan-finishing-n5",
+          "libraryId": "seed-cross-collar",
+          "x": 100,
+          "y": 510
+        },
+        {
+          "id": "ebg-plan-finishing-n6",
+          "libraryId": "seed-technical-mount",
+          "x": 320,
+          "y": 510
+        }
+      ],
+      "connections": [
+        {
+          "id": "ebg-plan-finishing-c1",
+          "fromNodeId": "ebg-plan-finishing-n1",
+          "toNodeId": "ebg-plan-finishing-n2",
+          "label": "collar available"
+        },
+        {
+          "id": "ebg-plan-finishing-c2",
+          "fromNodeId": "ebg-plan-finishing-n1",
+          "toNodeId": "ebg-plan-finishing-n3",
+          "label": "controls choking arm"
+        },
+        {
+          "id": "ebg-plan-finishing-c3",
+          "fromNodeId": "ebg-plan-finishing-n3",
+          "toNodeId": "ebg-plan-finishing-n2",
+          "label": "re-attack the collar"
+        },
+        {
+          "id": "ebg-plan-finishing-c4",
+          "fromNodeId": "ebg-plan-finishing-n4",
+          "toNodeId": "ebg-plan-finishing-n5",
+          "label": "stays flat"
+        },
+        {
+          "id": "ebg-plan-finishing-c5",
+          "fromNodeId": "ebg-plan-finishing-n4",
+          "toNodeId": "ebg-plan-finishing-n6",
+          "label": "turns away"
+        },
+        {
+          "id": "ebg-plan-finishing-c6",
+          "fromNodeId": "ebg-plan-finishing-n6",
+          "toNodeId": "ebg-plan-finishing-n1",
+          "label": "take the back"
+        }
+      ]
+    }
+  ]
+}
