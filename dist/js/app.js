@@ -18,15 +18,84 @@ const App = {
     BeltStore.load();
     this.currentDay = Progress.getCurrentDay();
     this.bindGlobalEvents();
-    GameplanStore.init().then(() => {
+    this._initTabBar();
+    Promise.all([GameplanStore.init(), DiaryStore.init()]).then(() => {
       this.render('home');
     }).catch(() => {
       this.render('home');
     });
   },
 
+  // ── Bottom tab bar ─────────────────────────────────────────
+  // Top-level screens show the tab bar; sub-screens (editors, timers,
+  // quizzes) hide it and rely on the top bar's back button.
+  TABS: [
+    ['home', 'Home', 'home'],
+    ['dy-home', 'Diary', 'diary'],
+    ['gp-list', 'Gameplan', 'gameplan'],
+    ['bt-home', 'Belt', 'belt'],
+    ['rules-home', 'Rules', 'rules']
+  ],
+  TAB_FOR_SCREEN: {
+    'home': 'home', 'hip-home': 'home', 'bjj-start': 'home',
+    'dy-home': 'dy-home', 'gp-list': 'gp-list', 'bt-home': 'bt-home', 'rules-home': 'rules-home'
+  },
+  _screen: null,
+  _params: null,
+
+  // Where the Diary's back button returns to: the last screen visited before
+  // entering the diary (moving between the diary and its entries doesn't count)
+  _diaryReturn: null,
+  SCREEN_LABELS: {
+    'home': 'Home', 'hip-home': 'Hip Opening', 'bjj-start': 'Circuit',
+    'gp-list': 'Gameplans', 'bt-home': 'Belt', 'rules-home': 'Rules'
+  },
+
+  diaryBackTarget() {
+    const r = this._diaryReturn;
+    return r && this.SCREEN_LABELS[r.screen] ? r : { screen: 'home', params: null };
+  },
+
+  _initTabBar() {
+    const nav = document.getElementById('tabbar');
+    if (!nav) return;
+    nav.innerHTML = '<div class="tabbar-inner">' + this.TABS.map(([screen, label, icon]) =>
+      `<button class="tab" data-tab="${screen}">${Icon.svg(icon, 24)}<span>${label}</span></button>`
+    ).join('') + '</div>';
+    nav.addEventListener('click', (e) => {
+      const tab = e.target.closest('[data-tab]');
+      if (!tab) return;
+      if (navigator.vibrate) navigator.vibrate(8);
+      this.render(tab.dataset.tab);
+    });
+  },
+
+  _updateTabBar(screen) {
+    const nav = document.getElementById('tabbar');
+    if (!nav) return;
+    const active = this.TAB_FOR_SCREEN[screen];
+    nav.hidden = !active;
+    document.body.classList.toggle('has-tabbar', !!active);
+    nav.querySelectorAll('.tab').forEach(btn => {
+      const on = btn.dataset.tab === active;
+      btn.classList.toggle('active', on);
+      if (on) btn.setAttribute('aria-current', 'page');
+      else btn.removeAttribute('aria-current');
+    });
+  },
+
   render(screen, params) {
     const app = document.getElementById('app');
+
+    // New screen starts at the top; re-renders of the same screen keep scroll
+    if (screen !== this._screen) app.scrollTop = 0;
+    const inDiary = s => s === 'dy-home' || s === 'dy-entry';
+    if (inDiary(screen) && this._screen && !inDiary(this._screen)) {
+      this._diaryReturn = { screen: this._screen, params: this._params };
+    }
+    this._screen = screen;
+    this._params = params || null;
+    this._updateTabBar(screen);
 
     // Clean up timer if leaving timer screen
     if (this.currentTimer) {
@@ -37,6 +106,8 @@ const App = {
       clearInterval(this.bjjCountdownTimer);
       this.bjjCountdownTimer = null;
     }
+    // Flush pending diary edits and prune empty rows before leaving
+    DiaryUI.leave();
     // Clean up gameplan canvas if leaving editor
     if (screen !== 'gp-editor' && GameplanCanvas._svg) {
       GameplanCanvas.destroy();
@@ -104,6 +175,30 @@ const App = {
       case 'rules-checker':
         app.innerHTML = RulesUI.renderChecker(this._checkerState);
         break;
+
+      // ── Diary screens ─────────────────────────────────────
+      case 'dy-home':
+        app.innerHTML = DiaryUI.renderHome();
+        DiaryUI.afterRenderHome();
+        break;
+      case 'dy-entry': {
+        // Opening a date with no entry creates one — that marks the day attended
+        const date = (params && params.date) || DiaryStore.todayKey();
+        const show = (entry) => {
+          app.innerHTML = DiaryUI.renderEntry(entry);
+          DiaryUI.afterRenderEntry();
+        };
+        const existing = DiaryStore.get(date);
+        if (existing) {
+          show(existing);
+        } else {
+          DiaryStore.create(date).then(show).catch(err => {
+            console.error('Could not create diary entry', err);
+            this.render('dy-home');
+          });
+        }
+        break;
+      }
 
       // ── Belt Tracker screens ──────────────────────────────
       case 'bt-home':
@@ -190,6 +285,10 @@ const App = {
           this.render('rules-quiz', { lesson: target.dataset.lesson });
         } else if (nav === 'rules-checker') {
           this.render('rules-checker');
+        } else if (nav === 'dy-home') {
+          this.render('dy-home');
+        } else if (nav === 'dy-entry') {
+          this.render('dy-entry', { date: target.dataset.date });
         } else if (nav === 'bt-home') {
           this.render('bt-home');
         } else if (nav === 'bt-stage') {
@@ -206,6 +305,12 @@ const App = {
         // Belt Tracker actions are handled by BeltUI
         if (action.startsWith('bt-')) {
           BeltUI.handleAction(action, actionEl, e);
+          return;
+        }
+
+        // Diary actions are handled by DiaryUI
+        if (action.startsWith('dy-')) {
+          DiaryUI.handleAction(action, actionEl, e);
           return;
         }
 
@@ -876,6 +981,11 @@ const App = {
         BeltUI.handleInput(e);
         return;
       }
+      // Diary autosaved fields
+      if (e.target.closest('.dy-entry-screen')) {
+        DiaryUI.handleInput(e);
+        return;
+      }
       if (e.target.id === 'gp-detail-label-input') {
         const node = GameplanCanvas.getSelectedNode();
         if (node) {
@@ -938,6 +1048,11 @@ const App = {
         BeltUI.handleChange(e);
         return;
       }
+      // Diary photo picker and date change
+      if (e.target.closest('.dy-entry-screen')) {
+        DiaryUI.handleChange(e);
+        return;
+      }
       if (e.target.id === 'gp-lib-variant-select') {
         const entry = this._getOpenLibraryEntry();
         if (entry) {
@@ -963,9 +1078,15 @@ const App = {
 
     // Don't lose the last edit if the app is closed or backgrounded
     // before the debounced save fires
-    window.addEventListener('pagehide', () => GameplanCanvas.flush());
+    window.addEventListener('pagehide', () => {
+      GameplanCanvas.flush();
+      DiaryUI.flush();
+    });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') GameplanCanvas.flush();
+      if (document.visibilityState === 'hidden') {
+        GameplanCanvas.flush();
+        DiaryUI.flush();
+      }
     });
 
     // Global keyboard handler

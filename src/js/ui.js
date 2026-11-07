@@ -37,68 +37,127 @@ const UI = {
   // ── Main Home Screen (Workout Selector) ────────────────────
 
   renderMainHome() {
+    const now = new Date();
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const dateLabel = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    // ── This week (from the diary) ──
+    const today = DiaryStore.todayKey();
+    const monday = DiaryStore.weekStart(today);
+    const week = Array.from({ length: 7 }, (_, i) => DiaryStore.addDays(monday, i));
+    const weekCount = week.filter(k => DiaryStore.get(k)).length;
+    const streak = this._weekStreak(today);
+    const todayEntry = DiaryStore.get(today);
+    const dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const strip = week.map((k, i) => {
+      const done = !!DiaryStore.get(k);
+      const cls = ['week-day', done ? 'done' : '', k === today ? 'today' : '', k > today ? 'future' : ''].join(' ');
+      return `<span class="${cls}"><span class="week-day-label">${dayLetters[i]}</span>
+        <span class="week-day-dot">${done ? Icon.svg('check', 14) : ''}</span></span>`;
+    }).join('');
+
+    const todayAction = todayEntry
+      ? `<button class="hero-logged" data-nav="dy-entry" data-date="${today}">
+          ${Icon.svg('check-circle', 22)}
+          <span class="hero-logged-text"><strong>Today's class logged</strong>
+            <span>${DiaryUI._summary(todayEntry)}</span></span>
+          ${Icon.svg('chevron-right', 18)}
+        </button>`
+      : `<button class="btn btn-light btn-block" data-nav="dy-entry" data-date="${today}">
+          ${Icon.svg('plus', 20)} Log today's class
+        </button>`;
+
+    // ── Workouts ──
     const daysCompleted = CHALLENGE_DATA.filter(d => Progress.isDayComplete(d.day)).length;
-    const hipSubtext = daysCompleted > 0 ? `${daysCompleted}/21 days complete` : 'Start your journey';
+    const hipPct = Math.round((daysCompleted / 21) * 100);
+    const hipSub = daysCompleted >= 21 ? 'Completed' : daysCompleted > 0
+      ? `Day ${Progress.getCurrentDay()} of 21` : '21-day mobility program';
+    const bjjMin = Math.round((App.bjjDuration * BJJ_EXERCISES.length) / 60);
+
+    // ── Progress rows ──
     const gpCount = GameplanStore.count;
-    const gpSubtext = gpCount > 0 ? `${gpCount} gameplan${gpCount !== 1 ? 's' : ''}` : 'Map your BJJ game';
-    const rulesUnitsDone = RULES_UNITS.filter(u => RulesProgress.unitProgress(u.id).complete).length;
-    const rulesSubtext = rulesUnitsDone > 0
-      ? `${rulesUnitsDone}/${RULES_UNITS.length} sections mastered`
+    const gpSub = gpCount > 0 ? `${gpCount} gameplan${gpCount !== 1 ? 's' : ''}` : 'Map your game';
+    const rulesDone = RULES_UNITS.filter(u => RulesProgress.unitProgress(u.id).complete).length;
+    const rulesSub = rulesDone > 0
+      ? `${rulesDone} of ${RULES_UNITS.length} sections mastered`
       : 'Know the rules, win the scrambles';
     const beltStarted = BeltData.STAGES.filter(s => BeltStore.isStageStarted(s.id)).length;
-    const beltSubtext = beltStarted > 0
-      ? `${beltStarted}/${BeltData.STAGES.length} stages started`
+    const beltSub = beltStarted > 0
+      ? `${beltStarted} of ${BeltData.STAGES.length} stages started`
       : 'Your curriculum, stripe by stripe';
+    const row = (nav, icon, tone, title, sub) => `
+      <button class="list-row" data-nav="${nav}">
+        ${Icon.badge(icon, tone)}
+        <span class="list-row-text">
+          <span class="list-row-title">${title}</span>
+          <span class="list-row-sub">${sub}</span>
+        </span>
+        <span class="list-row-trail">${Icon.svg('chevron-right', 18)}</span>
+      </button>`;
 
     return `
       <div class="screen main-home-screen" role="main" aria-label="Movement App">
-        <header class="app-header">
-          <h1>Movement App</h1>
+        <header class="app-header home-header">
+          <span class="eyebrow">${dateLabel}</span>
+          <h1>${greeting}</h1>
         </header>
 
-        <section class="home-section">
-          <h2 class="home-section-title">Gameplan</h2>
-          <div class="workout-cards">
-            <button class="workout-card workout-card-gp" data-nav="gp-list" aria-label="BJJ Gameplan">
-              <div class="workout-card-icon" aria-hidden="true">&#x1F4CB;</div>
-              <h2 class="workout-card-title">BJJ Gameplan</h2>
-              <p class="workout-card-sub">${gpSubtext}</p>
+        <section class="hero-card" aria-label="This week">
+          <div class="hero-top">
+            <div>
+              <span class="eyebrow">This week</span>
+              <div class="hero-stat">
+                <span class="hero-num">${weekCount}</span>
+                <span class="hero-unit">class${weekCount !== 1 ? 'es' : ''}</span>
+              </div>
+            </div>
+            <button class="hero-side" data-nav="dy-home" aria-label="Open diary">
+              <span class="hero-side-num">${Icon.svg('flame', 16)}${streak}</span>
+              <span class="hero-side-label">week streak</span>
             </button>
           </div>
+          <div class="week-strip" aria-label="${weekCount} classes this week">${strip}</div>
+          ${todayAction}
         </section>
 
-        <section class="home-section">
-          <h2 class="home-section-title">Learn</h2>
-          <div class="workout-cards">
-            <button class="workout-card workout-card-rules" data-nav="rules-home" aria-label="IBJJF Rules">
-              <div class="workout-card-icon" aria-hidden="true">&#x2696;&#xFE0F;</div>
-              <h2 class="workout-card-title">IBJJF Rules</h2>
-              <p class="workout-card-sub">${rulesSubtext}</p>
-            </button>
-            <button class="workout-card workout-card-belt" data-nav="bt-home" aria-label="Belt Tracker">
-              <div class="workout-card-icon" aria-hidden="true">&#x1F3C5;</div>
-              <h2 class="workout-card-title">Belt Tracker</h2>
-              <p class="workout-card-sub">${beltSubtext}</p>
-            </button>
-          </div>
-        </section>
+        <div class="section-head"><h2>Workouts</h2></div>
+        <div class="tile-grid">
+          <button class="tile" data-nav="hip-home">
+            ${Icon.badge('stretch', 'hip')}
+            <span class="tile-title">Hip Opening</span>
+            <span class="tile-sub">${hipSub}</span>
+            <span class="meter" style="--tone: var(--accent)"><span style="width:${hipPct}%"></span></span>
+          </button>
+          <button class="tile" data-nav="bjj-start">
+            ${Icon.badge('ball', 'bjj')}
+            <span class="tile-title">Yoga Ball Circuit</span>
+            <span class="tile-sub">${BJJ_EXERCISES.length} exercises · ${bjjMin} min</span>
+            <span class="tile-cta">${Icon.svg('play', 14)} Start</span>
+          </button>
+        </div>
 
-        <section class="home-section">
-          <h2 class="home-section-title">Keep Moving</h2>
-          <div class="workout-cards">
-            <button class="workout-card workout-card-hip" data-nav="hip-home" aria-label="21-Day Hip Opening Challenge">
-              <div class="workout-card-icon" aria-hidden="true">&#x1F9D8;</div>
-              <h2 class="workout-card-title">21-Day Hip Opening Challenge</h2>
-              <p class="workout-card-sub">${hipSubtext}</p>
-            </button>
-            <button class="workout-card workout-card-bjj" data-nav="bjj-start" aria-label="BJJ Yoga Ball Circuit">
-              <div class="workout-card-icon" aria-hidden="true">&#x1F94B;</div>
-              <h2 class="workout-card-title">BJJ Yoga Ball Circuit</h2>
-              <p class="workout-card-sub">Bounce into it</p>
-            </button>
-          </div>
-        </section>
+        <div class="section-head"><h2>Your game</h2></div>
+        <div class="list-group">
+          ${row('gp-list', 'gameplan', 'gp', 'Gameplans', gpSub)}
+          ${row('bt-home', 'belt', 'belt', 'Belt Tracker', beltSub)}
+          ${row('rules-home', 'rules', 'rules', 'IBJJF Rules', rulesSub)}
+        </div>
       </div>`;
+  },
+
+  // Consecutive weeks (Mon–Sun) with at least one class, counting back from
+  // this week — or from last week if nothing is logged yet this week.
+  _weekStreak(today) {
+    const hasClass = (mon) => {
+      for (let i = 0; i < 7; i++) if (DiaryStore.get(DiaryStore.addDays(mon, i))) return true;
+      return false;
+    };
+    let mon = DiaryStore.weekStart(today);
+    if (!hasClass(mon)) mon = DiaryStore.addDays(mon, -7);
+    let n = 0;
+    while (n < 520 && hasClass(mon)) { n++; mon = DiaryStore.addDays(mon, -7); }
+    return n;
   },
 
   // ── Hip Challenge Home Screen ──────────────────────────────
@@ -113,7 +172,7 @@ const UI = {
     if (motivation) {
       motivationHTML = `
         <div class="streak-badge" role="status" aria-label="${motivation.text}">
-          <span class="streak-fire" aria-hidden="true">${motivation.icon}</span>
+          <span class="streak-fire" aria-hidden="true">${Icon.svg('flame', 16)}</span>
           <span class="streak-count">${motivation.text}</span>
         </div>`;
     }
@@ -140,7 +199,7 @@ const UI = {
       daysHTML += `
         <button class="day-card ${statusClass}" data-nav="day" data-day="${dayData.day}" aria-label="${ariaLabel}">
           <span class="day-number" aria-hidden="true">${dayData.day}</span>
-          ${done ? '<span class="day-check" aria-hidden="true">&#x2713;</span>' : ''}
+          ${done ? `<span class="day-check" aria-hidden="true">${Icon.svg('check', 12)}</span>` : ''}
           ${hasProgress ? `<span class="day-partial" aria-hidden="true">${completedCount}/${totalCount}</span>` : ''}
           ${isCurrent ? '<span class="day-today" aria-hidden="true">TODAY</span>' : ''}
         </button>`;
@@ -157,7 +216,7 @@ const UI = {
         </header>
         ${allComplete ? `
           <div class="all-complete-banner" role="status">
-            <span aria-hidden="true">&#x1F3C6;</span> Challenge Complete! Amazing work!
+            ${Icon.svg('trophy', 18)} Challenge complete — amazing work!
           </div>` : ''}
         <nav class="day-grid" aria-label="Challenge days">${daysHTML}</nav>
         <button class="reset-btn" data-action="reset-all">Reset All Progress</button>
@@ -188,7 +247,7 @@ const UI = {
         <div class="pose-card ${done ? 'pose-done' : ''}" role="listitem">
           <div class="pose-image-wrap">
             ${imgSrc ? `<img class="pose-image" src="${imgSrc}" alt="${poseName}" loading="lazy">` : '<div class="pose-image-placeholder" role="img" aria-label="No image available"></div>'}
-            ${done ? '<div class="pose-done-overlay" aria-hidden="true">&#x2713;</div>' : ''}
+            ${done ? `<div class="pose-done-overlay" aria-hidden="true">${Icon.svg('check', 28)}</div>` : ''}
           </div>
           <div class="pose-info">
             <h3 class="pose-name">${poseName}</h3>
@@ -210,20 +269,21 @@ const UI = {
         <header class="day-header">
           <button class="btn-back" data-nav="hip-home" aria-label="Back to overview">&#x2190;</button>
           <nav class="day-nav" aria-label="Day navigation">
-            ${dayNumber > 1 ? `<button class="btn-nav-arrow" data-nav="day" data-day="${dayNumber - 1}" aria-label="Previous day">&#x25C0;</button>` : '<span class="btn-nav-spacer"></span>'}
+            ${dayNumber > 1 ? `<button class="btn-nav-arrow" data-nav="day" data-day="${dayNumber - 1}" aria-label="Previous day">${Icon.svg('chevron-left', 20)}</button>` : '<span class="btn-nav-spacer"></span>'}
             <h2>Day ${dayNumber}</h2>
-            ${dayNumber < 21 ? `<button class="btn-nav-arrow" data-nav="day" data-day="${dayNumber + 1}" aria-label="Next day">&#x25B6;</button>` : '<span class="btn-nav-spacer"></span>'}
+            ${dayNumber < 21 ? `<button class="btn-nav-arrow" data-nav="day" data-day="${dayNumber + 1}" aria-label="Next day">${Icon.svg('chevron-right', 20)}</button>` : '<span class="btn-nav-spacer"></span>'}
           </nav>
-          <div class="day-progress-wrap" role="progressbar" aria-valuenow="${completedCount}" aria-valuemin="0" aria-valuemax="${totalCount}" aria-label="Day progress: ${completedCount} of ${totalCount} poses">
+          <span class="topbar-spacer" aria-hidden="true"></span>
+        </header>
+        <div class="day-progress-wrap" role="progressbar" aria-valuenow="${completedCount}" aria-valuemin="0" aria-valuemax="${totalCount}" aria-label="Day progress: ${completedCount} of ${totalCount} poses">
             <div class="day-progress-bar">
               <div class="day-progress-fill" style="width:${progressPct}%"></div>
             </div>
-            <span class="day-progress-text">${completedCount}/${totalCount} poses</span>
-          </div>
-        </header>
+            <span class="day-progress-text">${completedCount} of ${totalCount} poses done</span>
+        </div>
         ${isDone ? `
           <div class="day-done-banner" role="status">
-            <span aria-hidden="true">&#x2705;</span> Day ${dayNumber} Complete!
+            ${Icon.svg('check-circle', 18)} Day ${dayNumber} complete
           </div>` : ''}
         ${!isActive && !isDone ? `
           <div class="day-preview-banner" role="status">
@@ -243,7 +303,7 @@ const UI = {
 
     return `
       <div class="screen timer-screen" role="main" aria-label="Timer for ${poseName}">
-        <button class="btn-back-timer" data-nav="day" data-day="${dayNumber}" aria-label="Back to day ${dayNumber}">&#x2190; Back</button>
+        <button class="btn-back-timer" data-nav="day" data-day="${dayNumber}" aria-label="Back to day ${dayNumber}"></button>
         <div class="timer-pose-name">${poseName}</div>
         <div class="timer-image-wrap" data-action="zoom-image" role="button" aria-label="Zoom image of ${poseName}">
           ${imgSrc ? `<img class="timer-image" src="${imgSrc}" alt="${poseName}">` : ''}
@@ -295,13 +355,13 @@ const UI = {
       <div class="congrats-overlay" id="congrats-overlay" role="dialog" aria-label="Day ${dayNumber} complete" aria-modal="true">
         <div class="congrats-content">
           <div class="congrats-confetti" aria-hidden="true">${confettiPieces}</div>
-          <div class="congrats-icon" aria-hidden="true">&#x1F389;</div>
-          <h2>Day ${dayNumber} Complete!</h2>
-          ${motivation ? `<p class="congrats-streak" role="status">${motivation.icon} ${motivation.text}</p>` : ''}
+          <div class="congrats-icon" aria-hidden="true">${Icon.badge('trophy', 'hip', 'lg')}</div>
+          <h2>Day ${dayNumber} complete</h2>
+          ${motivation ? `<p class="congrats-streak" role="status">${motivation.text}</p>` : ''}
           <div class="congrats-buttons">
             ${dayNumber < 21
               ? `<button class="btn-congrats-next" data-nav="day" data-day="${dayNumber + 1}">Next Day &#x2192;</button>`
-              : `<button class="btn-congrats-next" data-nav="home">&#x1F3C6; Challenge Complete!</button>`
+              : `<button class="btn-congrats-next" data-nav="home">Challenge complete</button>`
             }
             <button class="btn-congrats-home" data-nav="home">Home</button>
           </div>
@@ -334,7 +394,7 @@ const UI = {
           <button class="btn-back" data-nav="home" aria-label="Back to workouts">&#x2190;</button>
         </header>
         <div class="bjj-start-content">
-          <div class="bjj-start-icon" aria-hidden="true">&#x1F94B;</div>
+          <div class="bjj-start-icon" aria-hidden="true">${Icon.badge('ball', 'bjj', 'lg')}</div>
           <h1>BJJ Yoga Ball Circuit</h1>
           <p class="bjj-start-label">Time per exercise</p>
           <div class="scroll-wheel-wrap" aria-label="Select duration">
@@ -365,7 +425,7 @@ const UI = {
 
     return `
       <div class="screen bjj-circuit-screen" role="main" aria-label="Exercise ${exerciseIndex + 1} of ${BJJ_EXERCISES.length}">
-        <button class="btn-back-timer" data-nav="home" aria-label="Back to home">&#x2190; Back</button>
+        <button class="btn-back-timer" data-nav="bjj-start" aria-label="Back to circuit setup"></button>
         <div class="bjj-circuit-header">
           <span class="bjj-exercise-counter">${exerciseIndex + 1} / ${BJJ_EXERCISES.length}</span>
           <h2 class="bjj-exercise-name">${this.esc(exercise.name)}</h2>
@@ -409,8 +469,8 @@ const UI = {
       <div class="screen bjj-complete-screen" role="main" aria-label="Circuit complete">
         <div class="congrats-confetti" aria-hidden="true">${confettiPieces}</div>
         <div class="bjj-complete-content">
-          <div class="congrats-icon" aria-hidden="true">&#x1F389;</div>
-          <h2>Circuit Complete!</h2>
+          <div class="congrats-icon" aria-hidden="true">${Icon.badge('trophy', 'bjj', 'lg')}</div>
+          <h2>Circuit complete</h2>
           <p class="bjj-complete-sub">All 10 exercises done. Great work!</p>
           <div class="congrats-buttons">
             <button class="btn-congrats-next bjj-accent" data-action="bjj-restart">Start Again</button>

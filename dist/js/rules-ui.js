@@ -1,6 +1,12 @@
 // IBJJF Rules — screen rendering (home, cards, lessons, quiz, result, checker)
 
 const RulesUI = {
+  UNIT_ICONS: { scoreboard: 'chart', scenarios: 'target', penalties: 'alert', legal: 'belt' },
+
+  UNIT_ICONS: { scoreboard: 'chart', scenarios: 'target', penalties: 'alert', legal: 'belt' },
+
+  UNIT_ICONS: { scoreboard: 'chart', scenarios: 'target', penalties: 'alert', legal: 'belt' },
+
 
   // Image helper — renders only when the key exists in the IMAGES bundle
   _img(key, alt, cls) {
@@ -20,7 +26,7 @@ const RulesUI = {
           <circle class="rules-ring-fg ${complete ? 'rules-ring-done' : ''}" cx="24" cy="24" r="${r}"
             stroke-dasharray="${c}" stroke-dashoffset="${offset}"></circle>
         </svg>
-        ${complete ? '<span class="rules-ring-check">&#x2713;</span>' : ''}
+        ${complete ? '<span class="rules-ring-check">' + Icon.svg('check', 16) + '</span>' : ''}
       </span>`;
   },
 
@@ -37,7 +43,7 @@ const RulesUI = {
       tilesHTML += `
         <button class="rules-unit-tile" ${nav}
           aria-label="${UI.esc(unit.title)}, ${prog.complete ? 'complete' : pctLabel + '% complete'}">
-          <span class="rules-unit-icon" aria-hidden="true">${unit.icon}</span>
+          ${Icon.badge(this.UNIT_ICONS[unit.id] || 'rules', 'rules')}
           <span class="rules-unit-text">
             <span class="rules-unit-title">${UI.esc(unit.title)}</span>
             <span class="rules-unit-sub">${UI.esc(unit.sub)}</span>
@@ -48,9 +54,6 @@ const RulesUI = {
 
     return `
       <div class="screen rules-home-screen" role="main" aria-label="IBJJF Rules">
-        <header class="day-header">
-          <button class="btn-back" data-nav="home" aria-label="Back to workouts">&#x2190;</button>
-        </header>
         <header class="app-header">
           <h1>IBJJF Rules</h1>
           <p class="rules-tagline">Know the rules, win the scrambles</p>
@@ -95,7 +98,7 @@ const RulesUI = {
     if (card.miniQuiz) {
       miniQuizHTML = `
         <div class="rules-mini-quiz" id="rules-mini-quiz">
-          <p class="rules-mini-label">&#x1F914; Quick check</p>
+          <p class="rules-mini-label">${Icon.svg('help', 16)} Quick check</p>
           <p class="rules-mini-question">${UI.esc(card.miniQuiz)}</p>
           <button class="rules-mini-reveal-btn" data-action="rules-reveal" aria-expanded="false">Reveal answer</button>
           <p class="rules-mini-answer">${UI.esc(card.miniAnswer)}</p>
@@ -117,7 +120,7 @@ const RulesUI = {
           ${tableHTML}
           ${card.trap ? `
             <div class="rules-trap">
-              <span class="rules-trap-label">&#x26A0;&#xFE0F; Watch out</span>
+              <span class="rules-trap-label">${Icon.svg('alert', 16)} Watch out</span>
               <p>${UI.esc(card.trap)}</p>
             </div>` : ''}
           ${miniQuizHTML}
@@ -148,24 +151,24 @@ const RulesUI = {
       entriesHTML += `
         <button class="rules-lesson-item" data-nav="rules-cards" data-unit="${unitId}" data-index="0"
           aria-label="Rule cards, ${read} of ${cards.length} read">
-          <span class="rules-lesson-icon" aria-hidden="true">&#x1F4D6;</span>
+          ${Icon.badge('book-open', 'rules')}
           <span class="rules-lesson-text">
             <span class="rules-lesson-title">Rule Cards</span>
             <span class="rules-lesson-sub">${read}/${cards.length} read</span>
           </span>
-          <span class="rules-lesson-status ${allRead ? 'done' : ''}" aria-hidden="true">${allRead ? '&#x2713;' : '&#x2192;'}</span>
+          <span class="rules-lesson-status ${allRead ? 'done' : ''}" aria-hidden="true">${allRead ? Icon.svg('check', 18) : Icon.svg('chevron-right', 18)}</span>
         </button>`;
     }
 
     if (unit.checker) {
       entriesHTML += `
         <button class="rules-lesson-item" data-nav="rules-checker" aria-label="Open the legality checker">
-          <span class="rules-lesson-icon" aria-hidden="true">&#x1F50D;</span>
+          ${Icon.badge('search', 'rules')}
           <span class="rules-lesson-text">
             <span class="rules-lesson-title">Can I do this?</span>
             <span class="rules-lesson-sub">Check any technique by belt</span>
           </span>
-          <span class="rules-lesson-status" aria-hidden="true">&#x2192;</span>
+          <span class="rules-lesson-status" aria-hidden="true">${Icon.svg('chevron-right', 18)}</span>
         </button>`;
     }
 
@@ -174,17 +177,17 @@ const RulesUI = {
       const stat = RulesProgress.getLesson(lessonId);
       const complete = RulesProgress.isLessonComplete(lessonId);
       const sub = stat
-        ? `Best: ${stat.bestCorrect}/${stat.total}${stat.perfect ? ' &#x2B50;' : ''}`
+        ? `Best: ${stat.bestCorrect}/${stat.total}${stat.perfect ? ' · Perfect' : ''}`
         : `${lesson.questions.length} questions`;
       entriesHTML += `
         <button class="rules-lesson-item" data-nav="rules-quiz" data-lesson="${lessonId}"
           aria-label="Lesson ${i + 1}: ${UI.esc(lesson.title)}">
-          <span class="rules-lesson-icon" aria-hidden="true">${complete ? '&#x1F3C5;' : '&#x1F4DD;'}</span>
+          ${complete ? Icon.badge('trophy', 'success') : Icon.badge('pencil', 'rules')}
           <span class="rules-lesson-text">
             <span class="rules-lesson-title">${UI.esc(lesson.title)}</span>
             <span class="rules-lesson-sub">${sub}</span>
           </span>
-          <span class="rules-lesson-status ${complete ? 'done' : ''}" aria-hidden="true">${complete ? '&#x2713;' : '&#x2192;'}</span>
+          <span class="rules-lesson-status ${complete ? 'done' : ''}" aria-hidden="true">${complete ? Icon.svg('check', 18) : Icon.svg('chevron-right', 18)}</span>
         </button>`;
     });
 
@@ -247,10 +250,10 @@ const RulesUI = {
     const frac = result.correct / result.total;
     const perfect = result.correct === result.total;
     let headline, icon;
-    if (perfect) { headline = RULES_COPY.result.perfect; icon = '&#x1F3C6;'; }
-    else if (frac >= 0.8) { headline = RULES_COPY.result.great; icon = '&#x1F389;'; }
-    else if (frac >= 0.5) { headline = RULES_COPY.result.good; icon = '&#x1F44D;'; }
-    else { headline = RULES_COPY.result.keepGoing; icon = '&#x1F4AA;'; }
+    if (perfect) { headline = RULES_COPY.result.perfect; icon = Icon.badge('trophy', 'success', 'lg'); }
+    else if (frac >= 0.8) { headline = RULES_COPY.result.great; icon = Icon.badge('star', 'rules', 'lg'); }
+    else if (frac >= 0.5) { headline = RULES_COPY.result.good; icon = Icon.badge('check-circle', 'rules', 'lg'); }
+    else { headline = RULES_COPY.result.keepGoing; icon = Icon.badge('refresh', 'neutral', 'lg'); }
 
     const r = 54;
     const c = 2 * Math.PI * r;
@@ -326,7 +329,7 @@ const RulesUI = {
         const verdict = legal ? 'LEGAL' : (dq ? 'ILLEGAL &mdash; DQ' : 'ILLEGAL');
         resultHTML = `
           <div class="rules-check-result ${legal ? 'legal' : 'illegal'}" role="status">
-            <p class="rules-check-verdict">${legal ? '&#x2705;' : '&#x1F6AB;'} ${verdict}</p>
+            <p class="rules-check-verdict">${legal ? Icon.svg('check-circle', 22) : Icon.svg('ban', 22)} ${verdict}</p>
             <p class="rules-check-tech">${UI.esc(res.technique.name)}</p>
             ${res.note ? `<p class="rules-check-note">${UI.esc(res.note)}</p>` : ''}
             ${this._img(res.technique.image, res.technique.name, 'rules-check-image')}

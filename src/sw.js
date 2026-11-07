@@ -4,6 +4,7 @@ const ASSETS = [
   './index.html',
   './css/style.css',
   './js/images.js',
+  './js/icons.js',
   './js/data.js',
   './js/bjj-data.js',
   './js/timer.js',
@@ -21,6 +22,8 @@ const ASSETS = [
   './js/belt-data.js',
   './js/belt-store.js',
   './js/belt-ui.js',
+  './js/diary-store.js',
+  './js/diary-ui.js',
   './js/ui.js',
   './js/app.js',
   './manifest.json'

@@ -27,14 +27,14 @@ const GameplanUI = {
 
     return `
       <div class="screen gp-list-screen" role="main" aria-label="BJJ Gameplans">
-        <header class="screen-header">
-          <button class="btn-back" data-nav="home" aria-label="Back">&#x2190;</button>
-          <h1>BJJ Gameplans</h1>
+        <header class="app-header">
+          <h1>Gameplans</h1>
+          <p>Map how your positions connect</p>
         </header>
         <div class="gp-list-actions">
           <button class="gp-create-btn" data-action="gp-create">
-            <span class="gp-create-btn-icon">+</span>
-            New Gameplan
+            ${Icon.svg('plus', 18)}
+            New gameplan
           </button>
           <button class="gp-library-btn" data-action="gp-open-library-browse">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>

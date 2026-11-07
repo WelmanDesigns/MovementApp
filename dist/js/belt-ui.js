@@ -39,9 +39,6 @@ const BeltUI = {
     const cards = BeltData.STAGES.map(meta => this._stageCard(meta)).join('');
     return `
       <div class="screen bt-home-screen" role="main" aria-label="Belt Tracker">
-        <header class="day-header">
-          <button class="btn-back" data-nav="home" aria-label="Back to workouts">&#x2190;</button>
-        </header>
         <header class="app-header">
           <h1>Belt Tracker</h1>
           <p class="bt-home-sub">Build your curriculum for each stripe and exam</p>
@@ -63,15 +60,21 @@ const BeltUI = {
 
     const progressBits = [];
     if (summary.groupsWithReq) {
-      progressBits.push(summary.groupsComplete + ' of ' + summary.groupsWithReq + ' categories complete');
+      progressBits.push(summary.groupsComplete + '/' + summary.groupsWithReq + ' categories');
     }
     if (summary.hasTargets) {
-      progressBits.push(summary.selectedCapped + ' of ' + summary.requiredTotal + ' required moves selected');
+      progressBits.push(summary.selectedCapped + '/' + summary.requiredTotal + ' moves selected');
     }
     if (summary.hasExact) {
-      progressBits.push(summary.readyCount + ' of ' + summary.listTotal + ' techniques ready');
+      progressBits.push(summary.readyCount + '/' + summary.listTotal + ' ready');
     }
-    const stateNote = summary.started ? '' : '<span class="bt-not-started">Not started</span>';
+    const frac = summary.hasExact && summary.listTotal ? summary.readyCount / summary.listTotal
+      : summary.hasTargets && summary.requiredTotal ? summary.selectedCapped / summary.requiredTotal
+      : summary.groupsWithReq ? summary.groupsComplete / summary.groupsWithReq : 0;
+    const pct = Math.round(frac * 100);
+    const status = summary.started
+      ? `<span class="bt-stage-card-pct">${pct}%</span> ${UI.esc(progressBits.join(' · '))}`
+      : '<span class="bt-not-started">Not started</span>';
 
     return `
       <button class="bt-stage-card bt-belt-${meta.belt}" data-nav="bt-stage" data-stage-id="${meta.id}"
@@ -85,9 +88,10 @@ const BeltUI = {
         <span class="bt-stage-card-info">
           <span class="bt-stage-card-title">${UI.esc(meta.title)}</span>
           ${metaBits.length ? `<span class="bt-stage-card-meta">${UI.esc(metaBits.join(' · '))}</span>` : ''}
-          <span class="bt-stage-card-progress">${stateNote}${UI.esc(progressBits.join(' · '))}</span>
+          <span class="meter bt-stage-card-meter" style="--tone: var(--belt-${meta.belt})"><span style="width:${pct}%"></span></span>
+          <span class="bt-stage-card-progress">${status}</span>
         </span>
-        <span class="bt-stage-card-open" aria-hidden="true">Open &#x2192;</span>
+        <span class="bt-stage-card-open" aria-hidden="true">${Icon.svg('chevron-right', 18)}</span>
       </button>`;
   },
 
@@ -274,7 +278,7 @@ const BeltUI = {
           <button class="bt-status-chip bt-status-${m.status}" data-action="bt-toggle-editor" data-move-id="${m.id}"
                   aria-expanded="${editorOpen}"
                   aria-label="Edit ${UI.esc(m.name)}: status ${statusMeta.label}${m.notes ? ', has notes' : ''}">
-            ${statusMeta.label}${m.notes ? ' &#x1F4DD;' : ''}
+            ${statusMeta.label}${m.notes ? ' ' + Icon.svg('note', 13, 'bt-note-icon') : ''}
           </button>
         </div>
         <div class="bt-move-editor" ${editorOpen ? '' : 'hidden'}>
@@ -510,7 +514,7 @@ const BeltUI = {
       if (chip) {
         const meta = BELT_STATUSES.find(s => s.id === move.status) || BELT_STATUSES[0];
         chip.className = 'bt-status-chip bt-status-' + move.status;
-        chip.innerHTML = meta.label + (move.notes ? ' &#x1F4DD;' : '');
+        chip.innerHTML = meta.label + (move.notes ? ' ' + Icon.svg('note', 13, 'bt-note-icon') : '');
       }
     }
     this._refreshCounts(stageId, move.id);

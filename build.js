@@ -51,18 +51,20 @@ console.log(`Written dist/js/images.js (${(imagesJs.length / 1024 / 1024).toFixe
 function generateIcon(size) {
   // Create a simple SVG icon and convert to a basic PNG-like placeholder
   // For a real app you'd use canvas, but for portability we'll create an SVG
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+  // Geometric "M" mark on near-black, kept inside the maskable safe zone
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#c88a7e"/>
-      <stop offset="100%" style="stop-color:#b07468"/>
+    <linearGradient id="mk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#F472B6"/>
     </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="20%" r="90%">
+      <stop offset="0%" stop-color="#26262C"/>
+      <stop offset="100%" stop-color="#0B0B0D"/>
+    </radialGradient>
   </defs>
-  <rect width="${size}" height="${size}" rx="${size * 0.15}" fill="url(#bg)"/>
-  <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
-        font-family="Arial,sans-serif" font-weight="bold" font-size="${size * 0.35}px" fill="white">M</text>
-  <text x="50%" y="78%" dominant-baseline="middle" text-anchor="middle"
-        font-family="Arial,sans-serif" font-size="${size * 0.10}px" fill="rgba(255,255,255,0.9)">MOVE</text>
+  <rect width="100" height="100" fill="url(#glow)"/>
+  <path d="M29 67V35l21 21 21-21v32" fill="none" stroke="url(#mk)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
   return svg;
 }
