@@ -290,6 +290,22 @@ const GameplanStore = {
     }));
   },
 
+  // Remove every gameplan and library entry (used by full backup restore)
+  clearAll() {
+    this._libraryCache = {};
+    this.count = 0;
+    if (this._useLocalStorage) {
+      this._lsWrite(this._LS_KEY, []);
+      this._lsWrite(this._LS_LIB_KEY, []);
+      return Promise.resolve();
+    }
+    return Promise.all(['gameplans', 'library'].map(name => new Promise((resolve, reject) => {
+      const request = this._db.transaction(name, 'readwrite').objectStore(name).clear();
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    })));
+  },
+
   // ── Starter library ───────────────────────────────────────
 
   // Adds seed moves, skipping any whose name or alias already exists.

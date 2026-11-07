@@ -24,6 +24,7 @@ const ASSETS = [
   './js/belt-ui.js',
   './js/diary-store.js',
   './js/diary-ui.js',
+  './js/backup.js',
   './js/ui.js',
   './js/app.js',
   './manifest.json'

@@ -143,7 +143,20 @@ const UI = {
           ${row('bt-home', 'belt', 'belt', 'Belt Tracker', beltSub)}
           ${row('rules-home', 'rules', 'rules', 'IBJJF Rules', rulesSub)}
         </div>
+
+        <div class="section-head"><h2>App</h2></div>
+        <div class="list-group">
+          ${row('backup', 'shield', 'neutral', 'Backup &amp; restore', this._backupSub())}
+        </div>
       </div>`;
+  },
+
+  _backupSub() {
+    let last = null;
+    try { last = localStorage.getItem(Backup.LAST_BACKUP_KEY); } catch (e) {}
+    return last
+      ? 'Last backup ' + new Date(last).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      : 'Save your data to a file';
   },
 
   // Consecutive weeks (Mon–Sun) with at least one class, counting back from

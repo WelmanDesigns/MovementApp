@@ -4213,3 +4213,18 @@ button.dy-cell:focus-visible { outline: 2px solid var(--text-primary); outline-o
 .bt-note-icon { display: inline-block; vertical-align: -2px; opacity: 0.75; }
 .day-done-banner, .all-complete-banner { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .gp-create-btn .icon { stroke-width: 2.4; }
+
+/* ── Backup & restore ──────────────────────────────────────── */
+.list-row-static:hover, .list-row-static:active { background: transparent; }
+.backup-count { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+.backup-last { margin: 10px 2px 22px; font-size: 0.85rem; color: var(--text-muted); }
+.backup-actions { display: flex; flex-direction: column; gap: 10px; }
+.backup-status {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+.backup-status-ok { background: rgba(52, 211, 153, 0.12); color: var(--success-light); }
+.backup-status-error { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
+.backup-note { margin-top: 16px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }

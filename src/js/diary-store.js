@@ -126,6 +126,25 @@ const DiaryStore = {
     return this._req('photos', 'readonly', s => s.get(id)).then(r => (r ? r.blob : null));
   },
 
+  // Store a photo under a known id (backup restore keeps entry references valid)
+  putPhoto(id, blob) {
+    if (!this._db) return Promise.resolve();
+    return this._req('photos', 'readwrite', s => s.put({ id, blob })).then(() => id);
+  },
+
+  // Remove all entries and photos (used by full backup restore)
+  clearAll() {
+    this._entries = {};
+    if (this._useLocalStorage) {
+      this._lsWrite();
+      return Promise.resolve();
+    }
+    return Promise.all([
+      this._req('entries', 'readwrite', s => s.clear()),
+      this._req('photos', 'readwrite', s => s.clear())
+    ]).then(() => {});
+  },
+
   deletePhoto(id) {
     if (!this._db || !id) return Promise.resolve();
     return this._req('photos', 'readwrite', s => s.delete(id)).then(() => {});

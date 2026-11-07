@@ -1,4 +1,4 @@
-const CACHE_NAME = 'movement-app-v97e7827caa87';
+const CACHE_NAME = 'movement-app-v30772cf7fc3e';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   './js/belt-ui.js',
   './js/diary-store.js',
   './js/diary-ui.js',
+  './js/backup.js',
   './js/ui.js',
   './js/app.js',
   './manifest.json'

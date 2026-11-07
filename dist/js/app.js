@@ -200,6 +200,11 @@ const App = {
         break;
       }
 
+      // ── Backup & restore ──────────────────────────────────
+      case 'backup':
+        app.innerHTML = Backup.render();
+        break;
+
       // ── Belt Tracker screens ──────────────────────────────
       case 'bt-home':
         app.innerHTML = BeltUI.renderHome();
@@ -285,6 +290,9 @@ const App = {
           this.render('rules-quiz', { lesson: target.dataset.lesson });
         } else if (nav === 'rules-checker') {
           this.render('rules-checker');
+        } else if (nav === 'backup') {
+          Backup._status = null;
+          this.render('backup');
         } else if (nav === 'dy-home') {
           this.render('dy-home');
         } else if (nav === 'dy-entry') {
@@ -305,6 +313,12 @@ const App = {
         // Belt Tracker actions are handled by BeltUI
         if (action.startsWith('bt-')) {
           BeltUI.handleAction(action, actionEl, e);
+          return;
+        }
+
+        // Backup & restore actions
+        if (action.startsWith('backup-')) {
+          Backup.handleAction(action, actionEl, e);
           return;
         }
 
