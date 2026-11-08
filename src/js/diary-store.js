@@ -6,7 +6,7 @@
 // Falls back to localStorage (entries only, no photos) without IndexedDB.
 //
 // Entry shape (one per local calendar date):
-//   { date: 'YYYY-MM-DD', drills: [{ id, name, desc, photoId? }],
+//   { date: 'YYYY-MM-DD', drills: [{ id, name, desc, mins?, photoId? }],
 //     rolls: [{ id, partner, outcome: 'sub'|'subbed'|'none'|null, technique, notes }],
 //     createdAt, updatedAt }
 
@@ -203,6 +203,74 @@ const DiaryStore = {
   // Entries with startKey <= date <= endKey
   countBetween(startKey, endKey) {
     return Object.keys(this._entries).filter(k => k >= startKey && k <= endKey).length;
+  },
+
+  // ── Review stats ──────────────────────────────────────────────
+
+  // First date key of a review range ('30' | '90' | '365' days, or 'all' → null)
+  rangeStart(range, todayKey) {
+    const days = parseInt(range, 10);
+    return days > 0 ? this.addDays(todayKey, -(days - 1)) : null;
+  },
+
+  // Minutes logged on a drill (0 when blank / invalid)
+  minutes(drill) {
+    const n = Number(drill && drill.mins);
+    return n > 0 && isFinite(n) ? n : 0;
+  },
+
+  // Aggregate entries with startKey <= date <= endKey (null = open-ended).
+  // Names are grouped case- and whitespace-insensitively; the first spelling
+  // seen is the label. drillTime splits drill time by position — by minutes
+  // when any drill in range has a time, otherwise by share of drills.
+  stats(startKey, endKey) {
+    const entries = Object.values(this._entries).filter(e =>
+      (!startKey || e.date >= startKey) && (!endKey || e.date <= endKey));
+    const positions = new Map(), hits = new Map(), tapped = new Map();
+    const add = (map, raw, mins) => {
+      const name = String(raw || '').trim().replace(/\s+/g, ' ');
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (!map.has(key)) map.set(key, { name, count: 0, minutes: 0 });
+      const row = map.get(key);
+      row.count++;
+      row.minutes += mins || 0;
+    };
+    const s = { classes: entries.length, drills: 0, rolls: 0, subsHit: 0, subsTapped: 0,
+      noSub: 0, minutes: 0, timedDrills: 0 };
+
+    for (const e of entries) {
+      for (const d of e.drills || []) {
+        if (!String(d.name || '').trim()) continue;
+        const m = this.minutes(d);
+        s.drills++;
+        if (m) { s.timedDrills++; s.minutes += m; }
+        add(positions, d.name, m);
+      }
+      for (const r of e.rolls || []) {
+        s.rolls++;
+        if (r.outcome === 'sub') { s.subsHit++; add(hits, r.technique); }
+        else if (r.outcome === 'subbed') { s.subsTapped++; add(tapped, r.technique); }
+        else if (r.outcome === 'none') s.noSub++;
+      }
+    }
+
+    const byCount = (a, b) => b.count - a.count || b.minutes - a.minutes || a.name.localeCompare(b.name);
+    s.positions = [...positions.values()].sort(byCount);
+    s.hits = [...hits.values()].sort(byCount);
+    s.tapped = [...tapped.values()].sort(byCount);
+
+    const basis = s.minutes > 0 ? 'minutes' : 'count';
+    const total = basis === 'minutes' ? s.minutes : s.drills;
+    s.drillTime = {
+      basis,
+      rows: s.positions
+        .map(p => ({ name: p.name, value: basis === 'minutes' ? p.minutes : p.count }))
+        .filter(r => r.value > 0)
+        .map(r => Object.assign(r, { pct: total ? (r.value / total) * 100 : 0 }))
+        .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+    };
+    return s;
   },
 
   // ── Internal ──────────────────────────────────────────────────

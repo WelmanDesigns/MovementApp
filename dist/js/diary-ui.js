@@ -85,6 +85,24 @@ const DiaryUI = {
           ${hasToday ? Icon.svg('pencil', 18) + ' Edit today' : Icon.svg('plus', 20) + ' Log today'}
         </button>
 
+        <div class="dy-home-actions">
+          <button class="dy-secondary-btn" data-action="dy-past-toggle" aria-expanded="false" aria-controls="dy-past">
+            ${Icon.svg('calendar', 18)} Log a past class
+          </button>
+          <button class="dy-secondary-btn" data-nav="dy-review">
+            ${Icon.svg('chart', 18)} Review
+          </button>
+        </div>
+        <div class="dy-past" id="dy-past" hidden>
+          <label class="dy-past-label" for="dy-past-date">Class date</label>
+          <div class="dy-past-row">
+            <input type="date" class="dy-input dy-past-input" id="dy-past-date"
+              value="${DiaryStore.addDays(today, -1)}" max="${today}">
+            <button class="dy-past-go" data-action="dy-past-go">Open</button>
+          </div>
+          <p class="dy-past-hint">Or tap any day on the calendar above.</p>
+        </div>
+
         ${entries.length ? `<h2 class="home-section-title dy-recent-title">Recent</h2>
           <div class="dy-entry-list">${list}</div>` : ''}
       </div>`;
@@ -106,7 +124,12 @@ const DiaryUI = {
       const entry = DiaryStore.get(key);
       const lvl = DiaryStore.level(entry);
       const cls = `dy-cell dy-l${lvl}${key === today ? ' dy-cell-today' : ''}`;
-      if (!entry) return `<span class="${cls}" title="${UI.esc(this._fmtDate(key))}"></span>`;
+      if (!entry) {
+        // Empty past days open a new entry so missed classes can be backfilled
+        const label = `Log a class on ${this._fmtDate(key)}`;
+        return `<button class="${cls}" data-nav="dy-entry" data-date="${key}"
+          title="${UI.esc(label)}" aria-label="${UI.esc(label)}"></button>`;
+      }
       const label = `${this._fmtDate(key)}: ${this._summary(entry)}`;
       return `<button class="${cls}" data-nav="dy-entry" data-date="${key}"
         title="${UI.esc(label)}" aria-label="${UI.esc(label)}"></button>`;
@@ -131,6 +154,160 @@ const DiaryUI = {
   afterRenderHome() {
     const wrap = document.querySelector('.dy-heatmap');
     if (wrap) wrap.scrollLeft = wrap.scrollWidth;
+  },
+
+  // ── Review ───────────────────────────────────────────────────
+
+  REVIEW_RANGES: [['30', '30 days'], ['90', '3 months'], ['365', 'Year'], ['all', 'All time']],
+  REVIEW_TOP: 8,
+  _reviewRange: '90',
+
+  _fmtMins(m) {
+    m = Math.round(m);
+    if (m < 60) return m + 'm';
+    return Math.floor(m / 60) + 'h' + (m % 60 ? ' ' + (m % 60) + 'm' : '');
+  },
+
+  renderReview() {
+    const today = DiaryStore.todayKey();
+    const start = DiaryStore.rangeStart(this._reviewRange, today);
+    const s = DiaryStore.stats(start, today);
+    const since = start
+      ? 'Since ' + DiaryStore.parseKey(start).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      : 'Every class you have logged';
+
+    const ranges = this.REVIEW_RANGES.map(([val, label]) => {
+      const on = val === this._reviewRange;
+      return `<button class="dy-range-btn${on ? ' active' : ''}" data-action="dy-review-range"
+        data-range="${val}" aria-pressed="${on}">${label}</button>`;
+    }).join('');
+
+    const tile = (value, label, cls) => `
+      <div class="dy-tile"><span class="dy-tile-val${cls ? ' ' + cls : ''}">${value}</span><span class="dy-tile-label">${label}</span></div>`;
+
+    let body;
+    if (!s.classes) {
+      body = `<p class="dy-review-empty">No classes logged in this period.</p>`;
+    } else {
+      const record = (s.subsHit || s.subsTapped)
+        ? `<span class="dy-win">${s.subsHit}</span><span class="dy-rec-sep">–</span><span class="dy-loss">${s.subsTapped}</span>`
+        : '0';
+      body = `
+        <div class="dy-tiles">
+          ${tile(s.classes, 'Class' + (s.classes !== 1 ? 'es' : ''))}
+          ${tile(s.rolls, 'Roll' + (s.rolls !== 1 ? 's' : ''))}
+          ${tile(record, 'Subs hit – tapped')}
+          ${tile(s.minutes ? this._fmtMins(s.minutes) : s.drills, s.minutes ? 'Drill time' : 'Drills')}
+        </div>
+
+        ${this._reviewSection('Top positions practiced', 'Times drilled',
+          this._countBars(s.positions, 'pos', 'drill'),
+          'Name your drills to see which positions you practise most.')}
+
+        ${this._reviewSection('Drill time by position',
+          s.drillTime.basis === 'minutes' ? 'Share of drill minutes' : 'Share of drills',
+          this._timeBars(s.drillTime),
+          'Name your drills to see where your drilling time goes.',
+          this._timeNote(s))}
+
+        ${this._reviewSection('Top submissions hit', 'In rolls',
+          this._countBars(s.hits, 'hit', 'time'),
+          s.subsHit
+            ? 'Add the technique to your “I subbed” rolls to rank them here.'
+            : 'No submissions logged yet — mark a roll “I subbed” and note the technique.',
+          this._untaggedNote(s.subsHit, s.hits))}
+
+        ${this._reviewSection('Top submissions tapped to', 'In rolls',
+          this._countBars(s.tapped, 'tap', 'time'),
+          s.subsTapped
+            ? 'Add the technique to your “Got subbed” rolls to rank them here.'
+            : 'No taps logged in this period.',
+          this._untaggedNote(s.subsTapped, s.tapped))}`;
+    }
+
+    return `
+      <div class="screen dy-review-screen" role="main" aria-label="Diary review">
+        <header class="day-header">
+          <button class="btn-back" data-nav="dy-home" aria-label="Back to diary">&#x2190;</button>
+        </header>
+        <header class="app-header">
+          <h1>Review</h1>
+          <p class="dy-home-sub">${since}</p>
+        </header>
+        <div class="dy-range" role="group" aria-label="Period">${ranges}</div>
+        ${body}
+      </div>`;
+  },
+
+  _reviewSection(title, sub, bars, emptyText, note) {
+    return `
+      <section class="dy-review-card">
+        <div class="dy-review-head">
+          <h2 class="dy-review-title">${title}</h2>
+          <span class="dy-review-sub">${sub}</span>
+        </div>
+        ${bars || `<p class="dy-review-none">${emptyText}</p>`}
+        ${note ? `<p class="dy-review-note">${note}</p>` : ''}
+      </section>`;
+  },
+
+  _barRow(name, valueText, widthPct, tone, tip) {
+    return `
+      <li class="dy-bar" title="${UI.esc(tip)}">
+        <div class="dy-bar-head">
+          <span class="dy-bar-name">${UI.esc(name)}</span>
+          <span class="dy-bar-val">${valueText}</span>
+        </div>
+        <div class="dy-bar-track"><div class="dy-bar-fill dy-tone-${tone}" style="width:${Math.max(2, widthPct).toFixed(1)}%"></div></div>
+      </li>`;
+  },
+
+  // Ranked list, bar length relative to the top item
+  _countBars(rows, tone, unit) {
+    if (!rows.length) return '';
+    const top = rows.slice(0, this.REVIEW_TOP);
+    const max = top[0].count;
+    const more = rows.length - top.length;
+    return `<ol class="dy-bars">${top.map(r => this._barRow(r.name, r.count, (r.count / max) * 100, tone,
+      `${r.name}: ${r.count} ${unit}${r.count !== 1 ? 's' : ''}`)).join('')}</ol>` +
+      (more > 0 ? `<p class="dy-review-more">+ ${more} more</p>` : '');
+  },
+
+  // Part-of-whole list: bar length is the true percentage; the tail folds into "Other"
+  _timeBars(dt) {
+    if (!dt.rows.length) return '';
+    let rows = dt.rows;
+    if (rows.length > this.REVIEW_TOP) {
+      const head = rows.slice(0, this.REVIEW_TOP - 1);
+      const tail = rows.slice(this.REVIEW_TOP - 1);
+      rows = head.concat([{
+        name: `Other (${tail.length})`,
+        value: tail.reduce((a, r) => a + r.value, 0),
+        pct: tail.reduce((a, r) => a + r.pct, 0)
+      }]);
+    }
+    const isMins = dt.basis === 'minutes';
+    return `<ol class="dy-bars">${rows.map(r => {
+      const pct = r.pct < 1 ? '<1%' : Math.round(r.pct) + '%';
+      const detail = isMins ? this._fmtMins(r.value) : r.value + ' drill' + (r.value !== 1 ? 's' : '');
+      return this._barRow(r.name, `${pct} <span class="dy-bar-detail">· ${detail}</span>`, r.pct, 'time',
+        `${r.name}: ${pct} (${detail})`);
+    }).join('')}</ol>`;
+  },
+
+  _timeNote(s) {
+    if (!s.drills) return '';
+    if (s.drillTime.basis === 'count') {
+      return 'No drill times logged yet, so this is split by number of drills. Add minutes to your drills for a time split.';
+    }
+    const untimed = s.drills - s.timedDrills;
+    return untimed ? `Based on ${s.timedDrills} of ${s.drills} drills — ${untimed} had no minutes logged.` : '';
+  },
+
+  _untaggedNote(total, rows) {
+    const tagged = rows.reduce((a, r) => a + r.count, 0);
+    const missing = total - tagged;
+    return rows.length && missing > 0 ? `${missing} more with no technique noted.` : '';
   },
 
   // ── Entry screen ─────────────────────────────────────────────
@@ -189,6 +366,11 @@ const DiaryUI = {
         <div class="dy-row-top">
           <input class="dy-input" data-field="name" list="dy-moves" placeholder="Position / technique"
             value="${UI.esc(d.name)}" autocomplete="off" enterkeyhint="next">
+          <label class="dy-mins" title="Minutes spent on this drill">
+            <input class="dy-input" type="number" inputmode="numeric" min="0" max="600" step="1"
+              data-field="mins" placeholder="–" value="${d.mins != null ? d.mins : ''}" aria-label="Minutes">
+            <span aria-hidden="true">min</span>
+          </label>
           ${camera}
           <button class="dy-icon-btn" data-action="dy-remove-row" aria-label="Remove drill">${Icon.svg('x', 18)}</button>
         </div>
@@ -264,7 +446,7 @@ const DiaryUI = {
   leave() {
     if (this._entry && DiaryStore.get(this._entry.date) === this._entry) {
       const e = this._entry;
-      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId);
+      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId || d.mins);
       e.rolls = e.rolls.filter(r => (r.partner || '').trim() || r.outcome || (r.technique || '').trim() || (r.notes || '').trim());
       this.flush(false);
     }
@@ -348,6 +530,30 @@ const DiaryUI = {
       return;
     }
 
+    if (action === 'dy-past-toggle') {
+      const panel = document.getElementById('dy-past');
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      el.setAttribute('aria-expanded', String(!panel.hidden));
+      if (!panel.hidden) document.getElementById('dy-past-date').focus();
+      return;
+    }
+
+    if (action === 'dy-past-go') {
+      const input = document.getElementById('dy-past-date');
+      const date = input && input.value;
+      if (!date) { if (input) input.focus(); return; }
+      if (date > DiaryStore.todayKey()) { alert('That date is in the future.'); return; }
+      App.render('dy-entry', { date });
+      return;
+    }
+
+    if (action === 'dy-review-range') {
+      this._reviewRange = el.dataset.range;
+      App.render('dy-review');
+      return;
+    }
+
     if (action === 'dy-pick-date') {
       const input = document.querySelector('.dy-date-input');
       if (!input) return;
@@ -375,7 +581,8 @@ const DiaryUI = {
     if (!field || field === 'photo' || field === 'date') return;
     const r = this._rowFor(e.target);
     if (!r || !r.item) return;
-    r.item[field] = e.target.value;
+    const v = e.target.value;
+    r.item[field] = field === 'mins' ? (v === '' || isNaN(Number(v)) ? null : Number(v)) : v;
     this._scheduleSave();
   },
 

@@ -89,7 +89,7 @@ const App = {
 
     // New screen starts at the top; re-renders of the same screen keep scroll
     if (screen !== this._screen) app.scrollTop = 0;
-    const inDiary = s => s === 'dy-home' || s === 'dy-entry';
+    const inDiary = s => s === 'dy-home' || s === 'dy-entry' || s === 'dy-review';
     if (inDiary(screen) && this._screen && !inDiary(this._screen)) {
       this._diaryReturn = { screen: this._screen, params: this._params };
     }
@@ -180,6 +180,9 @@ const App = {
       case 'dy-home':
         app.innerHTML = DiaryUI.renderHome();
         DiaryUI.afterRenderHome();
+        break;
+      case 'dy-review':
+        app.innerHTML = DiaryUI.renderReview();
         break;
       case 'dy-entry': {
         // Opening a date with no entry creates one — that marks the day attended
@@ -297,6 +300,8 @@ const App = {
           this.render('dy-home');
         } else if (nav === 'dy-entry') {
           this.render('dy-entry', { date: target.dataset.date });
+        } else if (nav === 'dy-review') {
+          this.render('dy-review');
         } else if (nav === 'bt-home') {
           this.render('bt-home');
         } else if (nav === 'bt-stage') {
