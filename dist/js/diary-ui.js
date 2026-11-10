@@ -158,12 +158,6 @@ const DiaryUI = {
   REVIEW_TOP: 8,
   _reviewRange: '90',
 
-  _fmtMins(m) {
-    m = Math.round(m);
-    if (m < 60) return m + 'm';
-    return Math.floor(m / 60) + 'h' + (m % 60 ? ' ' + (m % 60) + 'm' : '');
-  },
-
   renderReview() {
     const today = DiaryStore.todayKey();
     const start = DiaryStore.rangeStart(this._reviewRange, today);
@@ -193,18 +187,12 @@ const DiaryUI = {
           ${tile(s.classes, 'Class' + (s.classes !== 1 ? 'es' : ''))}
           ${tile(s.rolls, 'Roll' + (s.rolls !== 1 ? 's' : ''))}
           ${tile(record, 'Subs hit – tapped')}
-          ${tile(s.minutes ? this._fmtMins(s.minutes) : s.drills, s.minutes ? 'Drill time' : 'Drills')}
+          ${tile(s.drills, 'Drill' + (s.drills !== 1 ? 's' : ''))}
         </div>
 
         ${this._reviewSection('Top positions practiced', 'Times drilled',
           this._countBars(s.positions, 'pos', 'drill'),
           'Name your positions to see which ones you practise most.')}
-
-        ${this._reviewSection('Drill time by position',
-          s.drillTime.basis === 'minutes' ? 'Share of drill minutes' : 'Share of drills',
-          this._timeBars(s.drillTime),
-          'Name your positions to see where your drilling time goes.',
-          this._timeNote(s))}
 
         ${this._reviewSection('Techniques drilled', 'Sweeps · subs · control',
           this._techBars(s.techniques),
@@ -223,6 +211,10 @@ const DiaryUI = {
             ? 'Name the submission on your “Got subbed” lines to rank them here.'
             : 'No taps logged in this period.',
           this._untaggedNote(s.subsTapped, s.tapped))}
+
+        ${this._reviewSection('Where subs happen', 'From position · hit–tapped',
+          this._fromBars(s.subFrom),
+          'Add the position to your sub lines (e.g. Kimura from Side control) to see where you finish and get caught.')}
 
         ${this._reviewSection('Rolls by partner belt', 'Rolls · hit–tapped',
           this._beltBars(s.byBelt),
@@ -277,28 +269,6 @@ const DiaryUI = {
       (more > 0 ? `<p class="dy-review-more">+ ${more} more</p>` : '');
   },
 
-  // Part-of-whole list: bar length is the true percentage; the tail folds into "Other"
-  _timeBars(dt) {
-    if (!dt.rows.length) return '';
-    let rows = dt.rows;
-    if (rows.length > this.REVIEW_TOP) {
-      const head = rows.slice(0, this.REVIEW_TOP - 1);
-      const tail = rows.slice(this.REVIEW_TOP - 1);
-      rows = head.concat([{
-        name: `Other (${tail.length})`,
-        value: tail.reduce((a, r) => a + r.value, 0),
-        pct: tail.reduce((a, r) => a + r.pct, 0)
-      }]);
-    }
-    const isMins = dt.basis === 'minutes';
-    return `<ol class="dy-bars">${rows.map(r => {
-      const pct = r.pct < 1 ? '<1%' : Math.round(r.pct) + '%';
-      const detail = isMins ? this._fmtMins(r.value) : r.value + ' drill' + (r.value !== 1 ? 's' : '');
-      return this._barRow(r.name, `${pct} <span class="dy-bar-detail">· ${detail}</span>`, r.pct, 'time',
-        `${r.name}: ${pct} (${detail})`);
-    }).join('')}</ol>`;
-  },
-
   // Ranked drilled techniques, coloured by type
   _techBars(rows) {
     if (!rows.length) return '';
@@ -309,6 +279,28 @@ const DiaryUI = {
       const type = this._typeLabel(DiaryStore.DRILL_TYPES, r.type);
       return this._barRow(r.name, `${r.count} <span class="dy-bar-detail">· ${type}</span>`,
         (r.count / max) * 100, r.type, `${r.name} (${type}): drilled ${r.count} time${r.count !== 1 ? 's' : ''}`);
+    }).join('')}</ol>` + (more > 0 ? `<p class="dy-review-more">+ ${more} more</p>` : '');
+  },
+
+  // Positions subs came from: one bar split green (you hit) / red (you got caught)
+  _fromBars(rows) {
+    if (!rows.length) return '';
+    const top = rows.slice(0, this.REVIEW_TOP);
+    const max = Math.max(...top.map(r => r.hit + r.tapped));
+    const more = rows.length - top.length;
+    return `<ol class="dy-bars">${top.map(r => {
+      const tip = `${r.name}: ${r.hit} sub${r.hit !== 1 ? 's' : ''} hit, ${r.tapped} tapped`;
+      return `
+      <li class="dy-bar" title="${UI.esc(tip)}">
+        <div class="dy-bar-head">
+          <span class="dy-bar-name">${UI.esc(r.name)}</span>
+          <span class="dy-bar-val"><span class="dy-win">${r.hit}</span>–<span class="dy-loss">${r.tapped}</span></span>
+        </div>
+        <div class="dy-bar-track dy-bar-split">
+          ${r.hit ? `<div class="dy-bar-fill dy-tone-hit" style="width:${(r.hit / max * 100).toFixed(1)}%"></div>` : ''}
+          ${r.tapped ? `<div class="dy-bar-fill dy-tone-tap" style="width:${(r.tapped / max * 100).toFixed(1)}%"></div>` : ''}
+        </div>
+      </li>`;
     }).join('')}</ol>` + (more > 0 ? `<p class="dy-review-more">+ ${more} more</p>` : '');
   },
 
@@ -323,15 +315,6 @@ const DiaryUI = {
         (r.rolls / max) * 100, 'belt-' + (r.belt || 'none'),
         `${name}: ${r.rolls} roll${r.rolls !== 1 ? 's' : ''}, ${r.hit} subs hit, ${r.tapped} tapped`);
     }).join('')}</ol>`;
-  },
-
-  _timeNote(s) {
-    if (!s.drills) return '';
-    if (s.drillTime.basis === 'count') {
-      return 'No drill times logged yet, so this is split by number of drills. Add minutes to your positions for a time split.';
-    }
-    const untimed = s.drills - s.timedDrills;
-    return untimed ? `Based on ${s.timedDrills} of ${s.drills} drills — ${untimed} had no minutes logged.` : '';
   },
 
   _untaggedNote(total, rows) {
@@ -402,11 +385,6 @@ const DiaryUI = {
         <div class="dy-row-top">
           <input class="dy-input dy-input-strong" data-field="name" list="dy-positions" placeholder="Main position"
             value="${UI.esc(d.name)}" autocomplete="off" enterkeyhint="next" aria-label="Main position">
-          <label class="dy-mins" title="Minutes spent on this position">
-            <input class="dy-input" type="number" inputmode="numeric" min="0" max="600" step="1"
-              data-field="mins" placeholder="–" value="${d.mins != null ? d.mins : ''}" aria-label="Minutes">
-            <span aria-hidden="true">min</span>
-          </label>
           ${camera}
           <button class="dy-icon-btn" data-action="dy-remove-row" aria-label="Remove position">${Icon.svg('x', 18)}</button>
         </div>
@@ -450,13 +428,23 @@ const DiaryUI = {
     const types = isTech ? DiaryStore.DRILL_TYPES : DiaryStore.SUB_TYPES;
     const field = isTech ? 'name' : 'technique';
     const label = this._typeLabel(types, item.type);
+    // Roll subs also record the position the sub came from
+    const from = isTech ? '' : `
+        <div class="dy-line-from">
+          <span class="dy-from-label" aria-hidden="true">from</span>
+          <input class="dy-input" data-field="from" list="dy-positions" autocomplete="off" enterkeyhint="done"
+            placeholder="Position (e.g. Back control)" value="${UI.esc(item.from)}" aria-label="${label}: from position">
+        </div>`;
     return `
       <div class="dy-line" data-line-id="${item.id}" data-list="${list}">
-        <button class="dy-tag dy-type-${item.type}" data-action="dy-cycle-type"
-          aria-label="${label} — tap to change type">${label}</button>
-        <input class="dy-input" data-field="${field}" list="${this.LINE_LISTS[item.type] || 'dy-subs'}" autocomplete="off" enterkeyhint="done"
-          placeholder="${this._linePlaceholder(item.type)}" value="${UI.esc(item[field])}" aria-label="${label}: technique">
-        <button class="dy-icon-btn dy-line-x" data-action="dy-remove-line" aria-label="Remove ${label}">${Icon.svg('x', 16)}</button>
+        <div class="dy-line-main">
+          <button class="dy-tag dy-type-${item.type}" data-action="dy-cycle-type"
+            aria-label="${label} — tap to change type">${label}</button>
+          <input class="dy-input" data-field="${field}" list="${this.LINE_LISTS[item.type] || 'dy-subs'}" autocomplete="off"
+            enterkeyhint="${isTech ? 'done' : 'next'}"
+            placeholder="${this._linePlaceholder(item.type)}" value="${UI.esc(item[field])}" aria-label="${label}: technique">
+          <button class="dy-icon-btn dy-line-x" data-action="dy-remove-line" aria-label="Remove ${label}">${Icon.svg('x', 16)}</button>
+        </div>${from}
       </div>`;
   },
 
@@ -529,7 +517,7 @@ const DiaryUI = {
       const e = this._entry;
       // Unnamed drill techniques say nothing; a sub with no technique still counts
       e.drills.forEach(d => { d.techniques = (d.techniques || []).filter(t => (t.name || '').trim()); });
-      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId || d.mins ||
+      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId ||
         d.techniques.length);
       e.rolls = e.rolls.filter(r => r.belt || (r.partner || '').trim() || (r.subs && r.subs.length) || r.noSub ||
         (r.notes || '').trim());
@@ -580,7 +568,8 @@ const DiaryUI = {
       if (!r || !r.item) return;
       const listKey = r.kind === 'drills' ? 'techniques' : 'subs';
       const line = { id: DiaryStore.newId(), type: el.dataset.type };
-      line[listKey === 'techniques' ? 'name' : 'technique'] = '';
+      if (listKey === 'techniques') line.name = '';
+      else { line.technique = ''; line.from = ''; }
       (r.item[listKey] = r.item[listKey] || []).push(line);
       if (listKey === 'subs' && r.item.noSub) this._setNoSub(r, false);
       const box = r.row.querySelector('.dy-lines');
@@ -728,7 +717,7 @@ const DiaryUI = {
     if (l) {
       if (l.item) l.item[field] = v;
     } else {
-      r.item[field] = field === 'mins' ? (v === '' || isNaN(Number(v)) ? null : Number(v)) : v;
+      r.item[field] = v;
     }
     this._scheduleSave();
   },

@@ -1206,6 +1206,11 @@ img {
 .week-day.today .week-day-label { color: var(--text-primary); }
 .week-day.today .week-day-dot { box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 3.5px var(--text-primary); }
 .week-day.future .week-day-dot { background: transparent; border: 1.5px dashed rgba(255, 255, 255, 0.1); }
+button.week-day { cursor: pointer; border-radius: var(--radius-sm); padding: 0; }
+button.week-day .week-day-dot { transition: transform var(--transition), filter var(--transition); }
+button.week-day:active .week-day-dot { transform: scale(0.92); }
+button.week-day:hover .week-day-dot { filter: brightness(1.1); }
+button.week-day:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 .hero-logged {
   display: flex;
@@ -4222,8 +4227,21 @@ button.dy-cell:focus-visible { outline: 2px solid var(--text-primary); outline-o
 /* Typed lines: drill techniques and roll submissions */
 .dy-lines { display: flex; flex-direction: column; gap: 6px; }
 .dy-lines:empty { display: none; }
-.dy-line { display: flex; align-items: center; gap: 6px; }
+.dy-line { display: flex; flex-direction: column; gap: 6px; }
+.dy-line-main, .dy-line-from { display: flex; align-items: center; gap: 6px; }
 .dy-line .dy-input { flex: 1; min-width: 0; padding-top: 8px; padding-bottom: 8px; }
+/* Roll subs: two rows (submission, then "from" position) aligned on the tag column */
+.dy-line[data-list="subs"] .dy-tag { width: 96px; min-width: 0; }
+.dy-line[data-list="subs"] + .dy-line[data-list="subs"] { padding-top: 8px; border-top: 1px solid var(--hairline); }
+.dy-from-label {
+  flex-shrink: 0;
+  width: 96px;
+  padding-right: 4px;
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.dy-line-from { margin-right: 40px; } /* line up with the submission box above (34px × + 6px gap) */
 .dy-tag {
   flex-shrink: 0;
   min-width: 86px;
@@ -4284,25 +4302,6 @@ button.dy-cell:focus-visible { outline: 2px solid var(--text-primary); outline-o
   color: var(--text-muted);
 }
 .dy-delete-btn:hover { color: var(--danger); }
-
-/* Drill minutes */
-.dy-mins {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-.dy-row-top .dy-mins .dy-input {
-  flex: none;
-  width: 52px;
-  padding: 10px 6px;
-  text-align: center;
-  -moz-appearance: textfield;
-}
-.dy-mins .dy-input::-webkit-outer-spin-button,
-.dy-mins .dy-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* Home: past class + review */
 .dy-log-btn { margin-bottom: 10px; }
@@ -4419,9 +4418,10 @@ button.dy-l0 { cursor: pointer; }
 .dy-bar-track { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
 .dy-bar-fill { height: 100%; border-radius: 4px; }
 .dy-tone-pos { background: var(--accent-diary); }
-.dy-tone-time { background: var(--accent-diary); }
 .dy-tone-hit { background: var(--success); }
 .dy-tone-tap { background: var(--danger); }
+.dy-bar-split { display: flex; gap: 2px; }
+.dy-bar-split .dy-bar-fill { flex-shrink: 0; }
 .dy-tone-sweep { background: var(--accent-bjj); }
 .dy-tone-sub { background: var(--success); }
 .dy-tone-control { background: var(--accent-belt); }

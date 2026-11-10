@@ -121,9 +121,8 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
     await run(ctx, `DiaryStore.init()`);
     check('rangeStart 30 days is inclusive of today', run(ctx, `DiaryStore.rangeStart('30', '2026-11-08')`) === '2026-10-10');
     check('rangeStart all is open-ended', run(ctx, `DiaryStore.rangeStart('all', '2026-11-08')`) === null);
-    check('minutes ignores blank / invalid',
-      run(ctx, `[DiaryStore.minutes({mins:''}), DiaryStore.minutes({mins:null}), DiaryStore.minutes({mins:-5}), DiaryStore.minutes({mins:'12'})].join()`) === '0,0,0,12');
 
+    // Old entries may still carry `mins` on drills — stats ignore it
     await run(ctx, `Promise.all([
       DiaryStore.save({ date: '2026-11-01', drills: [
         { id: 'a', name: 'Closed guard', mins: 20 }, { id: 'b', name: ' closed  GUARD ', mins: 10 },
@@ -142,21 +141,16 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
       s.rolls === 7 && s.subsHit === 4 && s.subsTapped === 1 && s.noSub === 1,
       JSON.stringify({ rolls: s.rolls, hit: s.subsHit, tap: s.subsTapped, none: s.noSub }));
     check('positions group case/space-insensitively, keep first spelling',
-      s.positions[0].name === 'Closed guard' && s.positions[0].count === 2 && s.positions[0].minutes === 30);
+      s.positions[0].name === 'Closed guard' && s.positions[0].count === 2);
+    check('positions rank by count, then name',
+      s.positions.map(p => p.name).join() === 'Closed guard,Mount,Side control', s.positions.map(p => p.name).join());
     check('top sub hit is Armbar ×2', s.hits[0].name === 'Armbar' && s.hits[0].count === 2 && s.hits.length === 2);
     check('tapped list', s.tapped.length === 1 && s.tapped[0].name === 'Triangle');
-    check('drill time uses minutes when logged', s.drillTime.basis === 'minutes' && s.minutes === 40 && s.timedDrills === 3);
-    check('drill time % excludes untimed drills',
-      s.drillTime.rows.length === 2 && s.drillTime.rows[0].pct === 75 && s.drillTime.rows[1].pct === 25,
-      JSON.stringify(s.drillTime.rows));
+    check('no minutes or drill-time stats', !('minutes' in s) && !('drillTime' in s) && !('minutes' in s.positions[0]));
 
     const all = run(ctx, `DiaryStore.stats(null, '2026-11-08')`);
-    check('all-time includes older classes', all.classes === 2 && all.positions.find(p => p.name === 'Mount').minutes === 70);
+    check('all-time includes older classes', all.classes === 2 && all.positions.find(p => p.name === 'Mount').count === 2);
 
-    await run(ctx, `DiaryStore.save({ date: '2026-08-01', drills: [{ id: 'g', name: 'Knee cut' }, { id: 'h', name: 'Knee cut' }, { id: 'i', name: 'Guard pull' }], rolls: [] })`);
-    const cnt = run(ctx, `DiaryStore.stats('2026-08-01', '2026-08-01')`);
-    check('drill time falls back to share of drills without minutes',
-      cnt.drillTime.basis === 'count' && Math.round(cnt.drillTime.rows[0].pct) === 67 && cnt.drillTime.rows[0].name === 'Knee cut');
     check('empty range', run(ctx, `DiaryStore.stats('2020-01-01', '2020-01-31').classes`) === 0);
   }
 
@@ -245,6 +239,34 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
     check('positions list: library positions + drill positions only',
       sg.positions.join() === 'Mount,Spider Guard', sg.positions.join());
     check('controls list: positions + typed controls', has('controls', 'Mount') && has('controls', 'Body Triangle'));
+  }
+
+  // ══ 7. Sub "from" positions ═════════════════════════════════
+  section('Sub from-positions');
+  {
+    const ctx = makeContext();
+    await run(ctx, `DiaryStore.init()`);
+    const legacy = run(ctx, `DiaryStore.normalize({ date: 'x', drills: [],
+      rolls: [{ id: 'r', outcome: 'sub', technique: 'Armbar' }, { id: 'q', subs: [{ id: 's', type: 'sub', technique: 'Kimura' }] }] })`);
+    check('older sub lines get an empty from position',
+      legacy.rolls[0].subs[0].from === '' && legacy.rolls[1].subs[0].from === '');
+
+    await run(ctx, `DiaryStore.save({ date: '2026-11-10', drills: [], rolls: [
+      { id: 'r1', belt: 'blue', partner: '', notes: '', subs: [
+        { id: 'a', type: 'sub', technique: 'Shoulder lock', from: 'Back control' },
+        { id: 'b', type: 'sub', technique: 'RNC', from: ' back  CONTROL ' },
+        { id: 'c', type: 'subbed', technique: 'Kimura', from: 'Side control' }] },
+      { id: 'r2', belt: 'white', partner: '', notes: '', subs: [
+        { id: 'd', type: 'subbed', technique: 'Armbar', from: 'Back control' },
+        { id: 'e', type: 'sub', technique: 'Armbar', from: '' }] }] })`);
+    const s = run(ctx, `DiaryStore.stats('2026-11-10', '2026-11-10')`);
+    check('subFrom groups positions case/space-insensitively with hit–tapped',
+      s.subFrom.length === 2 && s.subFrom[0].name === 'Back control' && s.subFrom[0].hit === 2 && s.subFrom[0].tapped === 1 &&
+      s.subFrom[1].name === 'Side control' && s.subFrom[1].tapped === 1, JSON.stringify(s.subFrom));
+    check('subs without a from position still count as hits', s.subsHit === 3 && s.hits.find(h => h.name === 'Armbar').count === 1);
+    const sg = run(ctx, `DiaryStore.suggestions([])`);
+    check('from positions feed the positions suggestions, not subs',
+      sg.positions.includes('Back control') && sg.positions.includes('Side control') && !sg.subs.includes('Back control'));
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);

@@ -51,10 +51,15 @@ const UI = {
     const todayEntry = DiaryStore.get(today);
     const dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     const strip = week.map((k, i) => {
-      const done = !!DiaryStore.get(k);
-      const cls = ['week-day', done ? 'done' : '', k === today ? 'today' : '', k > today ? 'future' : ''].join(' ');
-      return `<span class="${cls}"><span class="week-day-label">${dayLetters[i]}</span>
-        <span class="week-day-dot">${done ? Icon.svg('check', 14) : ''}</span></span>`;
+      const entry = DiaryStore.get(k);
+      const cls = ['week-day', entry ? 'done' : '', k === today ? 'today' : '', k > today ? 'future' : ''].join(' ');
+      const inner = `<span class="week-day-label">${dayLetters[i]}</span>
+        <span class="week-day-dot">${entry ? Icon.svg('check', 14) : ''}</span>`;
+      if (!entry) return `<span class="${cls}">${inner}</span>`;
+      // Logged days open that class in the diary to view / edit
+      const label = `${DiaryUI._fmtDate(k)}: ${DiaryUI._summary(entry)}. Open class`;
+      return `<button class="${cls}" data-nav="dy-entry" data-date="${k}"
+        aria-label="${UI.esc(label)}" title="${UI.esc(label)}">${inner}</button>`;
     }).join('');
 
     const todayAction = todayEntry

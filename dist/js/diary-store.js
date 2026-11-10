@@ -7,10 +7,10 @@
 //
 // Entry shape (one per local calendar date):
 //   { date: 'YYYY-MM-DD',
-//     drills: [{ id, name /* main position */, desc, mins?, photoId?,
+//     drills: [{ id, name /* main position */, desc, photoId?,
 //                techniques: [{ id, type: 'sweep'|'sub'|'control', name }] }],
 //     rolls: [{ id, belt: 'white'|…|'black'|null, partner /* optional name */,
-//               subs: [{ id, type: 'sub'|'subbed', technique }],
+//               subs: [{ id, type: 'sub'|'subbed', technique, from /* position */ }],
 //               noSub /* marked "No sub"; exclusive with subs */, notes }],
 //     createdAt, updatedAt }
 // Older rolls stored a single { outcome, technique }; normalize() upgrades them.
@@ -68,7 +68,9 @@ const DiaryStore = {
         put('positions', d.name);
         for (const t of d.techniques || []) if (byType[t.type]) put(byType[t.type], t.name);
       }
-      for (const r of e.rolls || []) for (const s of r.subs || []) put('subs', s.technique);
+      for (const r of e.rolls || []) {
+        for (const s of r.subs || []) { put('subs', s.technique); put('positions', s.from); }
+      }
     }
     const out = {};
     for (const k in lists) out[k] = [...lists[k].values()].sort((a, b) => a.localeCompare(b));
@@ -96,6 +98,7 @@ const DiaryStore = {
       delete r.technique;
       if (r.belt === undefined) r.belt = null;
       if (typeof r.noSub !== 'boolean') r.noSub = false;
+      for (const s of r.subs) if (typeof s.from !== 'string') s.from = '';
     }
     return entry;
   },
@@ -299,17 +302,9 @@ const DiaryStore = {
     return days > 0 ? this.addDays(todayKey, -(days - 1)) : null;
   },
 
-  // Minutes logged on a drill (0 when blank / invalid)
-  minutes(drill) {
-    const n = Number(drill && drill.mins);
-    return n > 0 && isFinite(n) ? n : 0;
-  },
-
   // Aggregate entries with startKey <= date <= endKey (null = open-ended).
   // Names are grouped case- and whitespace-insensitively; the first spelling
-  // seen is the label. drillTime splits drill time by position — by minutes
-  // when any drill in range has a time, otherwise by share of drills.
-  // A drill counts when it has a position or a named technique; techniques
+  // seen is the label. A drill counts when it has a position or a named technique; techniques
   // group by type + name. Each roll can hold several subs either way; noSub
   // counts rolls explicitly marked "No sub".
   stats(startKey, endKey) {
@@ -317,36 +312,38 @@ const DiaryStore = {
       (!startKey || e.date >= startKey) && (!endKey || e.date <= endKey));
     const positions = new Map(), hits = new Map(), tapped = new Map(), techniques = new Map();
     const clean = raw => String(raw || '').trim().replace(/\s+/g, ' ');
-    const add = (map, raw, mins, type) => {
+    const add = (map, raw, type) => {
       const name = clean(raw);
       if (!name) return;
       const key = (type ? type + ':' : '') + name.toLowerCase();
-      if (!map.has(key)) map.set(key, { name, count: 0, minutes: 0, type: type || null });
-      const row = map.get(key);
-      row.count++;
-      row.minutes += mins || 0;
+      if (!map.has(key)) map.set(key, { name, count: 0, type: type || null });
+      map.get(key).count++;
     };
-    const s = { classes: entries.length, drills: 0, rolls: 0, subsHit: 0, subsTapped: 0,
-      noSub: 0, minutes: 0, timedDrills: 0 };
-    const belts = new Map();
+    const s = { classes: entries.length, drills: 0, rolls: 0, subsHit: 0, subsTapped: 0, noSub: 0 };
+    const belts = new Map(), froms = new Map();
+    const addFrom = (raw, type) => {
+      const name = clean(raw);
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (!froms.has(key)) froms.set(key, { name, hit: 0, tapped: 0 });
+      froms.get(key)[type === 'sub' ? 'hit' : 'tapped']++;
+    };
 
     for (const e of entries) {
       for (const d of e.drills || []) {
         const techs = (d.techniques || []).filter(t => clean(t.name));
         if (!clean(d.name) && !techs.length) continue;
-        const m = this.minutes(d);
         s.drills++;
-        if (m) { s.timedDrills++; s.minutes += m; }
-        add(positions, d.name, m);
-        for (const t of techs) add(techniques, t.name, 0, t.type);
+        add(positions, d.name);
+        for (const t of techs) add(techniques, t.name, t.type);
       }
       for (const r of e.rolls || []) {
         s.rolls++;
         const subs = r.subs || [];
         let hit = 0, tap = 0;
         for (const ev of subs) {
-          if (ev.type === 'sub') { hit++; add(hits, ev.technique); }
-          else if (ev.type === 'subbed') { tap++; add(tapped, ev.technique); }
+          if (ev.type === 'sub') { hit++; add(hits, ev.technique); addFrom(ev.from, 'sub'); }
+          else if (ev.type === 'subbed') { tap++; add(tapped, ev.technique); addFrom(ev.from, 'subbed'); }
         }
         s.subsHit += hit;
         s.subsTapped += tap;
@@ -358,7 +355,7 @@ const DiaryStore = {
       }
     }
 
-    const byCount = (a, b) => b.count - a.count || b.minutes - a.minutes || a.name.localeCompare(b.name);
+    const byCount = (a, b) => b.count - a.count || a.name.localeCompare(b.name);
     s.positions = [...positions.values()].sort(byCount);
     s.hits = [...hits.values()].sort(byCount);
     s.tapped = [...tapped.values()].sort(byCount);
@@ -366,17 +363,9 @@ const DiaryStore = {
     // Belt order (white → black), rolls with no belt set last
     s.byBelt = this.BELTS.map(([k]) => belts.get(k)).filter(Boolean)
       .concat(belts.has(null) ? [belts.get(null)] : []);
-
-    const basis = s.minutes > 0 ? 'minutes' : 'count';
-    const total = basis === 'minutes' ? s.minutes : s.drills;
-    s.drillTime = {
-      basis,
-      rows: s.positions
-        .map(p => ({ name: p.name, value: basis === 'minutes' ? p.minutes : p.count }))
-        .filter(r => r.value > 0)
-        .map(r => Object.assign(r, { pct: total ? (r.value / total) * 100 : 0 }))
-        .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
-    };
+    // Positions subs happened from, busiest first
+    s.subFrom = [...froms.values()].sort((a, b) =>
+      (b.hit + b.tapped) - (a.hit + a.tapped) || b.hit - a.hit || a.name.localeCompare(b.name));
     return s;
   },
 
