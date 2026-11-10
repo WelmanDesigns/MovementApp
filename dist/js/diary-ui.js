@@ -121,9 +121,9 @@ const DiaryUI = {
       const lvl = DiaryStore.level(entry);
       const cls = `dy-cell dy-l${lvl}${key === today ? ' dy-cell-today' : ''}`;
       if (!entry) {
-        // Empty past days open a new entry so missed classes can be backfilled
+        // Empty past days open a draft — nothing is logged until something is added
         const label = `Log a class on ${this._fmtDate(key)}`;
-        return `<button class="${cls}" data-nav="dy-entry" data-date="${key}"
+        return `<button class="${cls}" data-nav="dy-entry" data-date="${key}" data-draft="1"
           title="${UI.esc(label)}" aria-label="${UI.esc(label)}"></button>`;
       }
       const label = `${this._fmtDate(key)}: ${this._summary(entry)}`;
@@ -325,8 +325,12 @@ const DiaryUI = {
 
   // ── Entry screen ─────────────────────────────────────────────
 
-  renderEntry(entry) {
+  // draft: the day isn't logged yet — nothing is saved until something is added
+  // (or "Mark as attended" is tapped)
+  renderEntry(entry, draft) {
     this._entry = entry;
+    this._draft = !!draft;
+    this._wasDraft = !!draft;
     const today = DiaryStore.todayKey();
     const isToday = entry.date === today;
     const names = DiaryStore.suggestions(Object.values(GameplanStore._libraryCache || {}));
@@ -347,6 +351,11 @@ const DiaryUI = {
           <input type="date" class="dy-date-input" data-field="date" value="${entry.date}" max="${today}" tabindex="-1" aria-hidden="true">
         </div>
 
+        ${draft ? `<div class="dy-draft" role="status">
+          <p>Not logged. Add drills or rolls below, or just mark the day.</p>
+          <button class="dy-draft-btn" data-action="dy-mark-attended">${Icon.svg('check', 16)} Mark as attended</button>
+        </div>` : ''}
+
         <datalist id="dy-positions">${opts(names.positions)}</datalist>
         <datalist id="dy-subs">${opts(names.subs)}</datalist>
         <datalist id="dy-sweeps">${opts(names.sweeps)}</datalist>
@@ -364,8 +373,17 @@ const DiaryUI = {
           <button class="dy-add-btn" data-action="dy-add-roll">+ Roll</button>
         </section>
 
-        <button class="dy-delete-btn" data-action="dy-delete-entry">Delete entry</button>
+        <button class="dy-delete-btn" data-action="dy-delete-entry"${draft ? ' hidden' : ''}>Delete entry</button>
       </div>`;
+  },
+
+  // Draft → real entry: drop the banner and show Delete
+  _endDraft() {
+    this._draft = false;
+    const banner = document.querySelector('.dy-draft');
+    if (banner) banner.remove();
+    const del = document.querySelector('.dy-delete-btn');
+    if (del) del.hidden = false;
   },
 
   _drillRow(d) {
@@ -493,10 +511,27 @@ const DiaryUI = {
     this._saveTimer = setTimeout(() => this.flush(true), 400);
   },
 
+  // True when a drill or roll row holds anything worth keeping
+  _keepDrill(d) {
+    return (d.name || '').trim() || (d.desc || '').trim() || d.photoId ||
+      (d.techniques || []).some(t => (t.name || '').trim());
+  },
+  _keepRoll(r) {
+    return r.belt || (r.partner || '').trim() || (r.subs && r.subs.length) || r.noSub || (r.notes || '').trim();
+  },
+  _hasContent(e) {
+    return e.drills.some(d => this._keepDrill(d)) || e.rolls.some(r => this._keepRoll(r));
+  },
+
   flush(showHint) {
     clearTimeout(this._saveTimer);
     this._saveTimer = null;
     if (!this._entry) return Promise.resolve();
+    // A draft (opened from an empty heatmap day) is only saved once it has content
+    if (this._draft) {
+      if (!this._hasContent(this._entry)) return Promise.resolve();
+      this._endDraft();
+    }
     return DiaryStore.save(this._entry).then(() => {
       if (showHint) this._flashSaved();
     }).catch(err => console.error('Diary save failed', err));
@@ -517,13 +552,19 @@ const DiaryUI = {
       const e = this._entry;
       // Unnamed drill techniques say nothing; a sub with no technique still counts
       e.drills.forEach(d => { d.techniques = (d.techniques || []).filter(t => (t.name || '').trim()); });
-      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId ||
-        d.techniques.length);
-      e.rolls = e.rolls.filter(r => r.belt || (r.partner || '').trim() || (r.subs && r.subs.length) || r.noSub ||
-        (r.notes || '').trim());
-      this.flush(false);
+      e.drills = e.drills.filter(d => this._keepDrill(d));
+      e.rolls = e.rolls.filter(r => this._keepRoll(r));
+      if (this._wasDraft && !e.drills.length && !e.rolls.length) {
+        clearTimeout(this._saveTimer);
+        DiaryStore.delete(e.date);
+      } else {
+        this.flush(false);
+      }
     }
+    // An unsaved draft is simply dropped
     clearTimeout(this._saveTimer);
+    this._draft = false;
+    this._wasDraft = false;
     this._entry = null;
     this._urls.forEach(u => URL.revokeObjectURL(u));
     this._urls = [];
@@ -655,6 +696,14 @@ const DiaryUI = {
       return;
     }
 
+    if (action === 'dy-mark-attended') {
+      if (!entry) return;
+      this._endDraft();
+      this._wasDraft = false; // an empty day is now a deliberate "attended"
+      this.flush(true);
+      return;
+    }
+
     if (action === 'dy-back') {
       const target = App.diaryBackTarget();
       App.render(target.screen, target.params);
@@ -778,6 +827,10 @@ const DiaryUI = {
     if (newDate > DiaryStore.todayKey()) {
       alert('That date is in the future.');
       App.render('dy-entry', { date: entry.date });
+      return;
+    }
+    if (this._draft) {
+      App.render('dy-entry', { date: newDate, draft: true });
       return;
     }
     const existing = DiaryStore.get(newDate);

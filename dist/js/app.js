@@ -185,15 +185,18 @@ const App = {
         app.innerHTML = DiaryUI.renderReview();
         break;
       case 'dy-entry': {
-        // Opening a date with no entry creates one — that marks the day attended
+        // Opening a date with no entry creates one — that marks the day attended —
+        // except a draft (empty heatmap day), which saves only once something is added
         const date = (params && params.date) || DiaryStore.todayKey();
-        const show = (entry) => {
-          app.innerHTML = DiaryUI.renderEntry(entry);
+        const show = (entry, draft) => {
+          app.innerHTML = DiaryUI.renderEntry(entry, draft);
           DiaryUI.afterRenderEntry();
         };
         const existing = DiaryStore.get(date);
         if (existing) {
           show(existing);
+        } else if (params && params.draft) {
+          show(DiaryStore.normalize({ date, drills: [], rolls: [] }), true);
         } else {
           DiaryStore.create(date).then(show).catch(err => {
             console.error('Could not create diary entry', err);
@@ -299,7 +302,7 @@ const App = {
         } else if (nav === 'dy-home') {
           this.render('dy-home');
         } else if (nav === 'dy-entry') {
-          this.render('dy-entry', { date: target.dataset.date });
+          this.render('dy-entry', { date: target.dataset.date, draft: target.dataset.draft === '1' });
         } else if (nav === 'dy-review') {
           this.render('dy-review');
         } else if (nav === 'bt-home') {

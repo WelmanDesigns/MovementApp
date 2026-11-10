@@ -4116,6 +4116,32 @@ button.dy-cell:focus-visible { outline: 2px solid var(--text-primary); outline-o
   color: var(--text-primary);
 }
 
+/* Draft (empty heatmap day opened, not logged yet) */
+.dy-draft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(244, 114, 182, 0.45);
+  background: rgba(244, 114, 182, 0.06);
+}
+.dy-draft p { flex: 1; font-size: 0.85rem; line-height: 1.35; color: var(--text-secondary); }
+.dy-draft-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-diary);
+  color: #2a0a1a;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.dy-draft-btn:focus-visible { box-shadow: var(--focus-ring); }
+
 .dy-section { margin-bottom: 24px; }
 .dy-rows { display: flex; flex-direction: column; gap: 10px; }
 .dy-rows:not(:empty) { margin-bottom: 10px; }
