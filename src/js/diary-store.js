@@ -6,9 +6,14 @@
 // Falls back to localStorage (entries only, no photos) without IndexedDB.
 //
 // Entry shape (one per local calendar date):
-//   { date: 'YYYY-MM-DD', drills: [{ id, name, desc, mins?, photoId? }],
-//     rolls: [{ id, partner, outcome: 'sub'|'subbed'|'none'|null, technique, notes }],
+//   { date: 'YYYY-MM-DD',
+//     drills: [{ id, name /* main position */, desc, mins?, photoId?,
+//                techniques: [{ id, type: 'sweep'|'sub'|'control', name }] }],
+//     rolls: [{ id, belt: 'white'|…|'black'|null, partner /* optional name */,
+//               subs: [{ id, type: 'sub'|'subbed', technique }],
+//               noSub /* marked "No sub"; exclusive with subs */, notes }],
 //     createdAt, updatedAt }
+// Older rolls stored a single { outcome, technique }; normalize() upgrades them.
 
 const DiaryStore = {
   _db: null,
@@ -16,12 +21,92 @@ const DiaryStore = {
   _LS_KEY: 'diaryEntries',
   _entries: {},
 
+  BELTS: [['white', 'White'], ['blue', 'Blue'], ['purple', 'Purple'], ['brown', 'Brown'], ['black', 'Black']],
+  DRILL_TYPES: [['sweep', 'Sweep'], ['sub', 'Submission'], ['control', 'Control']],
+  SUB_TYPES: [['sub', 'I subbed'], ['subbed', 'Got subbed']],
+
+  // Built-in submission suggestions, so the list is complete even when the
+  // Gameplan library has been trimmed. Spellings match the library seed.
+  SUBMISSIONS: [
+    // Chokes
+    'Rear Naked Choke', 'Short Choke', 'Guillotine', 'Arm-In Guillotine', 'High-Elbow Guillotine',
+    'Triangle Choke', 'Reverse Triangle', 'Arm Triangle', "D'Arce Choke", 'Anaconda Choke',
+    'Peruvian Necktie', 'Japanese Necktie', 'North-South Choke', 'Von Flue Choke', 'Gogoplata',
+    'Ezekiel Choke', 'Cross-Collar Choke', 'Lapel Choke', 'Bow-and-Arrow Choke', 'Baseball Bat Choke',
+    'Loop Choke', 'Clock Choke', 'Paper Cutter Choke', 'Sliding Collar Choke', 'Single Wing Choke',
+    'Karate Choke', 'Lazy Choke', 'Bulldog Choke',
+    // Arms and shoulders
+    'Armbar', 'Triangle Armbar', 'Kimura', 'Americana', 'Omoplata', 'Monoplata', 'Tarikoplata',
+    'Baratoplata', 'Wrist Lock', 'Bicep Slicer', 'Mir Lock',
+    // Legs
+    'Straight Ankle Lock', 'Estima Lock', 'Kneebar', 'Toe Hold', 'Inside Heel Hook', 'Outside Heel Hook',
+    'Calf Slicer', 'Banana Split', 'Electric Chair',
+    // Spine / neck
+    'Twister', 'Can Opener', 'Neck Crank'
+  ],
+
+  // Autocomplete lists by kind. `library` is the Gameplan library (array of
+  // { type, label, category, tags }); typed history comes from diary entries.
+  // Case-insensitive de-dupe, first spelling wins; each list sorted A–Z.
+  suggestions(library) {
+    const lists = { positions: new Map(), subs: new Map(), sweeps: new Map(), controls: new Map() };
+    const put = (key, v) => {
+      v = String(v || '').trim().replace(/\s+/g, ' ');
+      if (v && !lists[key].has(v.toLowerCase())) lists[key].set(v.toLowerCase(), v);
+    };
+    for (const e of library || []) {
+      if (!e || !e.label) continue;
+      if (e.type === 'position') { put('positions', e.label); put('controls', e.label); }
+      else if (e.type === 'submission') put('subs', e.label);
+      else if (e.type === 'transition' &&
+        (e.category === 'Sweeps' || (e.tags || []).includes('sweep'))) put('sweeps', e.label);
+    }
+    this.SUBMISSIONS.forEach(s => put('subs', s));
+    const byType = { sweep: 'sweeps', sub: 'subs', control: 'controls' };
+    for (const e of this.getAll()) {
+      for (const d of e.drills || []) {
+        put('positions', d.name);
+        for (const t of d.techniques || []) if (byType[t.type]) put(byType[t.type], t.name);
+      }
+      for (const r of e.rolls || []) for (const s of r.subs || []) put('subs', s.technique);
+    }
+    const out = {};
+    for (const k in lists) out[k] = [...lists[k].values()].sort((a, b) => a.localeCompare(b));
+    return out;
+  },
+
+  // Bring an entry (possibly from an older version or a backup) up to the
+  // current shape. Idempotent; mutates and returns the entry.
+  normalize(entry) {
+    if (!entry) return entry;
+    entry.drills = Array.isArray(entry.drills) ? entry.drills : [];
+    entry.rolls = Array.isArray(entry.rolls) ? entry.rolls : [];
+    for (const d of entry.drills) {
+      if (!Array.isArray(d.techniques)) d.techniques = [];
+    }
+    for (const r of entry.rolls) {
+      if (!Array.isArray(r.subs)) {
+        r.subs = [];
+        if (r.outcome === 'sub' || r.outcome === 'subbed') {
+          r.subs.push({ id: r.id + 's', type: r.outcome, technique: r.technique || '' });
+        }
+        r.noSub = r.outcome === 'none';
+      }
+      delete r.outcome;
+      delete r.technique;
+      if (r.belt === undefined) r.belt = null;
+      if (typeof r.noSub !== 'boolean') r.noSub = false;
+    }
+    return entry;
+  },
+
   init() {
     return new Promise((resolve) => {
       const fallback = () => {
         this._db = null;
         this._useLocalStorage = true;
         this._entries = this._lsRead();
+        Object.values(this._entries).forEach(e => this.normalize(e));
         resolve();
       };
 
@@ -44,7 +129,7 @@ const DiaryStore = {
         const all = tx.objectStore('entries').getAll();
         all.onsuccess = () => {
           this._entries = {};
-          for (const entry of all.result) this._entries[entry.date] = entry;
+          for (const entry of all.result) this._entries[entry.date] = this.normalize(entry);
           resolve();
         };
         all.onerror = fallback;
@@ -80,6 +165,7 @@ const DiaryStore = {
   },
 
   save(entry) {
+    this.normalize(entry);
     entry.updatedAt = new Date().toISOString();
     this._entries[entry.date] = entry;
     if (this._useLocalStorage) {
@@ -223,35 +309,52 @@ const DiaryStore = {
   // Names are grouped case- and whitespace-insensitively; the first spelling
   // seen is the label. drillTime splits drill time by position — by minutes
   // when any drill in range has a time, otherwise by share of drills.
+  // A drill counts when it has a position or a named technique; techniques
+  // group by type + name. Each roll can hold several subs either way; noSub
+  // counts rolls explicitly marked "No sub".
   stats(startKey, endKey) {
     const entries = Object.values(this._entries).filter(e =>
       (!startKey || e.date >= startKey) && (!endKey || e.date <= endKey));
-    const positions = new Map(), hits = new Map(), tapped = new Map();
-    const add = (map, raw, mins) => {
-      const name = String(raw || '').trim().replace(/\s+/g, ' ');
+    const positions = new Map(), hits = new Map(), tapped = new Map(), techniques = new Map();
+    const clean = raw => String(raw || '').trim().replace(/\s+/g, ' ');
+    const add = (map, raw, mins, type) => {
+      const name = clean(raw);
       if (!name) return;
-      const key = name.toLowerCase();
-      if (!map.has(key)) map.set(key, { name, count: 0, minutes: 0 });
+      const key = (type ? type + ':' : '') + name.toLowerCase();
+      if (!map.has(key)) map.set(key, { name, count: 0, minutes: 0, type: type || null });
       const row = map.get(key);
       row.count++;
       row.minutes += mins || 0;
     };
     const s = { classes: entries.length, drills: 0, rolls: 0, subsHit: 0, subsTapped: 0,
       noSub: 0, minutes: 0, timedDrills: 0 };
+    const belts = new Map();
 
     for (const e of entries) {
       for (const d of e.drills || []) {
-        if (!String(d.name || '').trim()) continue;
+        const techs = (d.techniques || []).filter(t => clean(t.name));
+        if (!clean(d.name) && !techs.length) continue;
         const m = this.minutes(d);
         s.drills++;
         if (m) { s.timedDrills++; s.minutes += m; }
         add(positions, d.name, m);
+        for (const t of techs) add(techniques, t.name, 0, t.type);
       }
       for (const r of e.rolls || []) {
         s.rolls++;
-        if (r.outcome === 'sub') { s.subsHit++; add(hits, r.technique); }
-        else if (r.outcome === 'subbed') { s.subsTapped++; add(tapped, r.technique); }
-        else if (r.outcome === 'none') s.noSub++;
+        const subs = r.subs || [];
+        let hit = 0, tap = 0;
+        for (const ev of subs) {
+          if (ev.type === 'sub') { hit++; add(hits, ev.technique); }
+          else if (ev.type === 'subbed') { tap++; add(tapped, ev.technique); }
+        }
+        s.subsHit += hit;
+        s.subsTapped += tap;
+        if (r.noSub && !hit && !tap) s.noSub++;
+        const belt = r.belt || null;
+        if (!belts.has(belt)) belts.set(belt, { belt, rolls: 0, hit: 0, tapped: 0 });
+        const b = belts.get(belt);
+        b.rolls++; b.hit += hit; b.tapped += tap;
       }
     }
 
@@ -259,6 +362,10 @@ const DiaryStore = {
     s.positions = [...positions.values()].sort(byCount);
     s.hits = [...hits.values()].sort(byCount);
     s.tapped = [...tapped.values()].sort(byCount);
+    s.techniques = [...techniques.values()].sort(byCount);
+    // Belt order (white → black), rolls with no belt set last
+    s.byBelt = this.BELTS.map(([k]) => belts.get(k)).filter(Boolean)
+      .concat(belts.has(null) ? [belts.get(null)] : []);
 
     const basis = s.minutes > 0 ? 'minutes' : 'count';
     const total = basis === 'minutes' ? s.minutes : s.drills;

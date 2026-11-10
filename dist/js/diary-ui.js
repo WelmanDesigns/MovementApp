@@ -30,16 +30,12 @@ const DiaryUI = {
     return bits.join(' · ');
   },
 
-  // Move names for autocomplete: Gameplan library + anything typed before
-  _moveNames() {
-    const names = new Set();
-    const lib = GameplanStore._libraryCache || {};
-    for (const id in lib) if (lib[id] && lib[id].label) names.add(lib[id].label.trim());
-    for (const e of DiaryStore.getAll()) {
-      for (const d of e.drills) if (d.name && d.name.trim()) names.add(d.name.trim());
-      for (const r of e.rolls) if (r.technique && r.technique.trim()) names.add(r.technique.trim());
-    }
-    return [...names].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  // Datalist id for a typed line: submissions only for subs, etc.
+  LINE_LISTS: { sweep: 'dy-sweeps', sub: 'dy-subs', subbed: 'dy-subs', control: 'dy-controls' },
+
+  _typeLabel(list, type) {
+    const hit = list.find(([k]) => k === type);
+    return hit ? hit[1] : '';
   },
 
   // ── Home ─────────────────────────────────────────────────────
@@ -202,27 +198,35 @@ const DiaryUI = {
 
         ${this._reviewSection('Top positions practiced', 'Times drilled',
           this._countBars(s.positions, 'pos', 'drill'),
-          'Name your drills to see which positions you practise most.')}
+          'Name your positions to see which ones you practise most.')}
 
         ${this._reviewSection('Drill time by position',
           s.drillTime.basis === 'minutes' ? 'Share of drill minutes' : 'Share of drills',
           this._timeBars(s.drillTime),
-          'Name your drills to see where your drilling time goes.',
+          'Name your positions to see where your drilling time goes.',
           this._timeNote(s))}
+
+        ${this._reviewSection('Techniques drilled', 'Sweeps · subs · control',
+          this._techBars(s.techniques),
+          'Add a sweep, submission or control to your drilled positions to see them here.')}
 
         ${this._reviewSection('Top submissions hit', 'In rolls',
           this._countBars(s.hits, 'hit', 'time'),
           s.subsHit
-            ? 'Add the technique to your “I subbed” rolls to rank them here.'
-            : 'No submissions logged yet — mark a roll “I subbed” and note the technique.',
+            ? 'Name the submission on your “I subbed” lines to rank them here.'
+            : 'No submissions logged yet — add “+ I subbed” to a roll and name the technique.',
           this._untaggedNote(s.subsHit, s.hits))}
 
         ${this._reviewSection('Top submissions tapped to', 'In rolls',
           this._countBars(s.tapped, 'tap', 'time'),
           s.subsTapped
-            ? 'Add the technique to your “Got subbed” rolls to rank them here.'
+            ? 'Name the submission on your “Got subbed” lines to rank them here.'
             : 'No taps logged in this period.',
-          this._untaggedNote(s.subsTapped, s.tapped))}`;
+          this._untaggedNote(s.subsTapped, s.tapped))}
+
+        ${this._reviewSection('Rolls by partner belt', 'Rolls · hit–tapped',
+          this._beltBars(s.byBelt),
+          'Pick your partner’s belt on each roll to see this.')}`;
     }
 
     return `
@@ -295,10 +299,36 @@ const DiaryUI = {
     }).join('')}</ol>`;
   },
 
+  // Ranked drilled techniques, coloured by type
+  _techBars(rows) {
+    if (!rows.length) return '';
+    const top = rows.slice(0, this.REVIEW_TOP);
+    const max = top[0].count;
+    const more = rows.length - top.length;
+    return `<ol class="dy-bars">${top.map(r => {
+      const type = this._typeLabel(DiaryStore.DRILL_TYPES, r.type);
+      return this._barRow(r.name, `${r.count} <span class="dy-bar-detail">· ${type}</span>`,
+        (r.count / max) * 100, r.type, `${r.name} (${type}): drilled ${r.count} time${r.count !== 1 ? 's' : ''}`);
+    }).join('')}</ol>` + (more > 0 ? `<p class="dy-review-more">+ ${more} more</p>` : '');
+  },
+
+  // Rolls per partner belt (white → black), with subs hit–tapped against each
+  _beltBars(rows) {
+    if (!rows.some(r => r.belt)) return '';
+    const max = Math.max(...rows.map(r => r.rolls));
+    return `<ol class="dy-bars">${rows.map(r => {
+      const name = r.belt ? this._typeLabel(DiaryStore.BELTS, r.belt) : 'Belt not set';
+      const rec = `<span class="dy-win">${r.hit}</span>–<span class="dy-loss">${r.tapped}</span>`;
+      return this._barRow(name, `${r.rolls} <span class="dy-bar-detail">· </span>${rec}`,
+        (r.rolls / max) * 100, 'belt-' + (r.belt || 'none'),
+        `${name}: ${r.rolls} roll${r.rolls !== 1 ? 's' : ''}, ${r.hit} subs hit, ${r.tapped} tapped`);
+    }).join('')}</ol>`;
+  },
+
   _timeNote(s) {
     if (!s.drills) return '';
     if (s.drillTime.basis === 'count') {
-      return 'No drill times logged yet, so this is split by number of drills. Add minutes to your drills for a time split.';
+      return 'No drill times logged yet, so this is split by number of drills. Add minutes to your positions for a time split.';
     }
     const untimed = s.drills - s.timedDrills;
     return untimed ? `Based on ${s.timedDrills} of ${s.drills} drills — ${untimed} had no minutes logged.` : '';
@@ -316,7 +346,8 @@ const DiaryUI = {
     this._entry = entry;
     const today = DiaryStore.todayKey();
     const isToday = entry.date === today;
-    const options = this._moveNames().map(n => `<option value="${UI.esc(n)}"></option>`).join('');
+    const names = DiaryStore.suggestions(Object.values(GameplanStore._libraryCache || {}));
+    const opts = list => list.map(n => `<option value="${UI.esc(n)}"></option>`).join('');
 
     return `
       <div class="screen dy-entry-screen" role="main" aria-label="Diary entry">
@@ -333,12 +364,15 @@ const DiaryUI = {
           <input type="date" class="dy-date-input" data-field="date" value="${entry.date}" max="${today}" tabindex="-1" aria-hidden="true">
         </div>
 
-        <datalist id="dy-moves">${options}</datalist>
+        <datalist id="dy-positions">${opts(names.positions)}</datalist>
+        <datalist id="dy-subs">${opts(names.subs)}</datalist>
+        <datalist id="dy-sweeps">${opts(names.sweeps)}</datalist>
+        <datalist id="dy-controls">${opts(names.controls)}</datalist>
 
         <section class="dy-section">
           <h2 class="home-section-title">Drills</h2>
           <div class="dy-rows" id="dy-drills">${entry.drills.map(d => this._drillRow(d)).join('')}</div>
-          <button class="dy-add-btn" data-action="dy-add-drill">+ Drill</button>
+          <button class="dy-add-btn" data-action="dy-add-drill">+ Position</button>
         </section>
 
         <section class="dy-section">
@@ -361,46 +395,93 @@ const DiaryUI = {
         <img data-photo-id="${d.photoId}" alt="Photo for ${UI.esc(d.name || 'drill')}">
         <button class="dy-photo-remove" data-action="dy-remove-photo" aria-label="Remove photo">${Icon.svg('x', 14)}</button>
       </div>` : '';
+    const adds = DiaryStore.DRILL_TYPES.map(([k, label]) =>
+      `<button class="dy-mini-add dy-type-${k}" data-action="dy-add-line" data-type="${k}">+ ${label}</button>`).join('');
     return `
       <div class="dy-row" data-drill-id="${d.id}">
         <div class="dy-row-top">
-          <input class="dy-input" data-field="name" list="dy-moves" placeholder="Position / technique"
-            value="${UI.esc(d.name)}" autocomplete="off" enterkeyhint="next">
-          <label class="dy-mins" title="Minutes spent on this drill">
+          <input class="dy-input dy-input-strong" data-field="name" list="dy-positions" placeholder="Main position"
+            value="${UI.esc(d.name)}" autocomplete="off" enterkeyhint="next" aria-label="Main position">
+          <label class="dy-mins" title="Minutes spent on this position">
             <input class="dy-input" type="number" inputmode="numeric" min="0" max="600" step="1"
               data-field="mins" placeholder="–" value="${d.mins != null ? d.mins : ''}" aria-label="Minutes">
             <span aria-hidden="true">min</span>
           </label>
           ${camera}
-          <button class="dy-icon-btn" data-action="dy-remove-row" aria-label="Remove drill">${Icon.svg('x', 18)}</button>
+          <button class="dy-icon-btn" data-action="dy-remove-row" aria-label="Remove position">${Icon.svg('x', 18)}</button>
         </div>
+        <div class="dy-lines">${(d.techniques || []).map(t => this._lineRow(t, 'techniques')).join('')}</div>
+        <div class="dy-mini-adds" role="group" aria-label="Add a technique from this position">${adds}</div>
         <textarea class="dy-input dy-text" data-field="desc" rows="2" placeholder="Key details (optional)">${UI.esc(d.desc)}</textarea>
         ${photo}
       </div>`;
   },
 
   _rollRow(r) {
-    const chip = (val, label) => `<button class="dy-chip dy-chip-${val}${r.outcome === val ? ' active' : ''}"
-      data-action="dy-outcome" data-outcome="${val}" aria-pressed="${r.outcome === val}">${label}</button>`;
-    const showTech = r.outcome === 'sub' || r.outcome === 'subbed';
+    const belts = DiaryStore.BELTS.map(([k, label]) => {
+      const on = r.belt === k;
+      return `<button class="dy-belt dy-belt-${k}${on ? ' active' : ''}" data-action="dy-belt" data-belt="${k}"
+        aria-pressed="${on}"><span class="dy-belt-dot" aria-hidden="true"></span>${label}</button>`;
+    }).join('');
+    const adds = DiaryStore.SUB_TYPES.map(([k, label]) =>
+      `<button class="dy-mini-add dy-type-${k}" data-action="dy-add-line" data-type="${k}">+ ${label}</button>`).join('') +
+      `<button class="dy-mini-add dy-no-sub${r.noSub ? ' active' : ''}" data-action="dy-no-sub"
+        aria-pressed="${!!r.noSub}">No sub</button>`;
     return `
       <div class="dy-row" data-roll-id="${r.id}">
-        <div class="dy-row-top">
-          <input class="dy-input" data-field="partner" placeholder="Partner (optional)"
-            value="${UI.esc(r.partner)}" autocomplete="off" enterkeyhint="next">
+        <div class="dy-row-head">
+          <span class="dy-row-label">Partner belt</span>
           <button class="dy-icon-btn" data-action="dy-remove-row" aria-label="Remove roll">${Icon.svg('x', 18)}</button>
         </div>
-        <div class="dy-chips" role="group" aria-label="Outcome">
-          ${chip('sub', 'I subbed')}${chip('subbed', 'Got subbed')}${chip('none', 'No sub')}
-        </div>
-        <input class="dy-input" data-field="technique" list="dy-moves" autocomplete="off"
-          placeholder="${this._techPlaceholder(r.outcome)}" value="${UI.esc(r.technique)}"${showTech ? '' : ' hidden'}>
+        <div class="dy-belts" role="group" aria-label="Partner belt">${belts}</div>
+        <input class="dy-input" data-field="partner" placeholder="Name (optional)"
+          value="${UI.esc(r.partner)}" autocomplete="off" enterkeyhint="next" aria-label="Partner name (optional)">
+        <div class="dy-lines">${(r.subs || []).map(s => this._lineRow(s, 'subs')).join('')}</div>
+        <div class="dy-mini-adds" role="group" aria-label="Add a submission">${adds}</div>
         <textarea class="dy-input dy-text" data-field="notes" rows="2" placeholder="What went right / wrong (optional)">${UI.esc(r.notes)}</textarea>
       </div>`;
   },
 
-  _techPlaceholder(outcome) {
-    return outcome === 'subbed' ? 'Caught with what?' : 'Subbed them with what?';
+  // One typed line inside a row: a drill technique (list 'techniques', text in
+  // .name) or a roll submission (list 'subs', text in .technique). The tag
+  // cycles the type on tap.
+  _lineRow(item, list) {
+    const isTech = list === 'techniques';
+    const types = isTech ? DiaryStore.DRILL_TYPES : DiaryStore.SUB_TYPES;
+    const field = isTech ? 'name' : 'technique';
+    const label = this._typeLabel(types, item.type);
+    return `
+      <div class="dy-line" data-line-id="${item.id}" data-list="${list}">
+        <button class="dy-tag dy-type-${item.type}" data-action="dy-cycle-type"
+          aria-label="${label} — tap to change type">${label}</button>
+        <input class="dy-input" data-field="${field}" list="${this.LINE_LISTS[item.type] || 'dy-subs'}" autocomplete="off" enterkeyhint="done"
+          placeholder="${this._linePlaceholder(item.type)}" value="${UI.esc(item[field])}" aria-label="${label}: technique">
+        <button class="dy-icon-btn dy-line-x" data-action="dy-remove-line" aria-label="Remove ${label}">${Icon.svg('x', 16)}</button>
+      </div>`;
+  },
+
+  _linePlaceholder(type) {
+    return {
+      sweep: 'Which sweep?', sub: 'Which submission?', control: 'Pin / control detail',
+      subbed: 'Caught with what?'
+    }[type] || 'Technique';
+  },
+
+  _setNoSub(r, on) {
+    r.item.noSub = on;
+    const btn = r.row.querySelector('.dy-no-sub');
+    if (btn) {
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on);
+    }
+  },
+
+  // Find the line item (drill technique / roll sub) an element belongs to
+  _lineFor(el, r) {
+    const line = el.closest('.dy-line');
+    if (!line || !r || !r.item) return null;
+    const list = r.item[line.dataset.list] || [];
+    return { line, list: line.dataset.list, item: list.find(x => x.id === line.dataset.lineId) };
   },
 
   // Load photo blobs into thumbnails after the entry screen is in the DOM
@@ -446,8 +527,12 @@ const DiaryUI = {
   leave() {
     if (this._entry && DiaryStore.get(this._entry.date) === this._entry) {
       const e = this._entry;
-      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId || d.mins);
-      e.rolls = e.rolls.filter(r => (r.partner || '').trim() || r.outcome || (r.technique || '').trim() || (r.notes || '').trim());
+      // Unnamed drill techniques say nothing; a sub with no technique still counts
+      e.drills.forEach(d => { d.techniques = (d.techniques || []).filter(t => (t.name || '').trim()); });
+      e.drills = e.drills.filter(d => (d.name || '').trim() || (d.desc || '').trim() || d.photoId || d.mins ||
+        d.techniques.length);
+      e.rolls = e.rolls.filter(r => r.belt || (r.partner || '').trim() || (r.subs && r.subs.length) || r.noSub ||
+        (r.notes || '').trim());
       this.flush(false);
     }
     clearTimeout(this._saveTimer);
@@ -474,13 +559,89 @@ const DiaryUI = {
       if (!entry) return;
       const isDrill = action === 'dy-add-drill';
       const item = isDrill
-        ? { id: DiaryStore.newId(), name: '', desc: '' }
-        : { id: DiaryStore.newId(), partner: '', outcome: null, technique: '', notes: '' };
+        ? { id: DiaryStore.newId(), name: '', desc: '', techniques: [] }
+        : { id: DiaryStore.newId(), belt: null, partner: '', subs: [], noSub: false, notes: '' };
       (isDrill ? entry.drills : entry.rolls).push(item);
       const list = document.getElementById(isDrill ? 'dy-drills' : 'dy-rolls');
       list.insertAdjacentHTML('beforeend', isDrill ? this._drillRow(item) : this._rollRow(item));
-      const input = list.lastElementChild.querySelector('input');
-      if (input) input.focus();
+      // Drills: straight into the position name. Rolls: belt first, so no keyboard.
+      if (isDrill) {
+        const input = list.lastElementChild.querySelector('input');
+        if (input) input.focus();
+      } else {
+        list.lastElementChild.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      this._scheduleSave();
+      return;
+    }
+
+    if (action === 'dy-add-line') {
+      const r = this._rowFor(el);
+      if (!r || !r.item) return;
+      const listKey = r.kind === 'drills' ? 'techniques' : 'subs';
+      const line = { id: DiaryStore.newId(), type: el.dataset.type };
+      line[listKey === 'techniques' ? 'name' : 'technique'] = '';
+      (r.item[listKey] = r.item[listKey] || []).push(line);
+      if (listKey === 'subs' && r.item.noSub) this._setNoSub(r, false);
+      const box = r.row.querySelector('.dy-lines');
+      box.insertAdjacentHTML('beforeend', this._lineRow(line, listKey));
+      box.lastElementChild.querySelector('input').focus();
+      this._scheduleSave();
+      return;
+    }
+
+    if (action === 'dy-remove-line') {
+      const r = this._rowFor(el);
+      const l = this._lineFor(el, r);
+      if (!l || !l.item) return;
+      r.item[l.list] = r.item[l.list].filter(x => x !== l.item);
+      l.line.remove();
+      this._scheduleSave();
+      return;
+    }
+
+    if (action === 'dy-cycle-type') {
+      const r = this._rowFor(el);
+      const l = this._lineFor(el, r);
+      if (!l || !l.item) return;
+      const types = l.list === 'techniques' ? DiaryStore.DRILL_TYPES : DiaryStore.SUB_TYPES;
+      const i = types.findIndex(([k]) => k === l.item.type);
+      l.item.type = types[(i + 1) % types.length][0];
+      const focused = document.activeElement === el;
+      l.line.outerHTML = this._lineRow(l.item, l.list);
+      if (focused) {
+        const tag = r.row.querySelector(`[data-line-id="${l.item.id}"] .dy-tag`);
+        if (tag) tag.focus();
+      }
+      this._scheduleSave();
+      return;
+    }
+
+    if (action === 'dy-no-sub') {
+      const r = this._rowFor(el);
+      if (!r || !r.item) return;
+      const turnOn = !r.item.noSub;
+      if (turnOn && r.item.subs.length) {
+        const named = r.item.subs.filter(s => (s.technique || '').trim()).length;
+        if (named && !confirm(`Mark as no sub? This clears the ${r.item.subs.length} submission line${r.item.subs.length !== 1 ? 's' : ''} on this roll.`)) return;
+        r.item.subs = [];
+        r.row.querySelector('.dy-lines').innerHTML = '';
+      }
+      this._setNoSub(r, turnOn);
+      this._scheduleSave();
+      return;
+    }
+
+    if (action === 'dy-belt') {
+      const r = this._rowFor(el);
+      if (!r || !r.item) return;
+      const val = el.dataset.belt;
+      r.item.belt = r.item.belt === val ? null : val; // tap again to clear
+      r.row.querySelectorAll('.dy-belt').forEach(b => {
+        const on = b.dataset.belt === r.item.belt;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on);
+      });
       this._scheduleSave();
       return;
     }
@@ -491,25 +652,6 @@ const DiaryUI = {
       entry[r.kind] = entry[r.kind].filter(x => x !== r.item);
       if (r.item.photoId) DiaryStore.deletePhoto(r.item.photoId);
       r.row.remove();
-      this._scheduleSave();
-      return;
-    }
-
-    if (action === 'dy-outcome') {
-      const r = this._rowFor(el);
-      if (!r || !r.item) return;
-      const val = el.dataset.outcome;
-      r.item.outcome = r.item.outcome === val ? null : val; // tap again to clear
-      r.row.querySelectorAll('.dy-chip').forEach(c => {
-        const on = c.dataset.outcome === r.item.outcome;
-        c.classList.toggle('active', on);
-        c.setAttribute('aria-pressed', on);
-      });
-      const tech = r.row.querySelector('[data-field="technique"]');
-      const show = r.item.outcome === 'sub' || r.item.outcome === 'subbed';
-      tech.hidden = !show;
-      tech.placeholder = this._techPlaceholder(r.item.outcome);
-      if (show && !tech.value) tech.focus();
       this._scheduleSave();
       return;
     }
@@ -582,7 +724,12 @@ const DiaryUI = {
     const r = this._rowFor(e.target);
     if (!r || !r.item) return;
     const v = e.target.value;
-    r.item[field] = field === 'mins' ? (v === '' || isNaN(Number(v)) ? null : Number(v)) : v;
+    const l = this._lineFor(e.target, r);
+    if (l) {
+      if (l.item) l.item[field] = v;
+    } else {
+      r.item[field] = field === 'mins' ? (v === '' || isNaN(Number(v)) ? null : Number(v)) : v;
+    }
     this._scheduleSave();
   },
 

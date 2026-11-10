@@ -94,7 +94,7 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
     ctx = makeContext(backing);
     await run(ctx, `DiaryStore.init()`);
     const e = run(ctx, `DiaryStore.get('2026-11-07')`);
-    check('entry survives reload', e && e.drills[0].name === 'Knee Cut' && e.rolls[0].technique === 'Triangle');
+    check('entry survives reload (legacy roll migrated)', e && e.drills[0].name === 'Knee Cut' && e.rolls[0].subs[0].technique === 'Triangle');
     check('getAll is newest first',
       run(ctx, `DiaryStore.getAll().map(e => e.date).join(',')`) === '2026-11-07,2026-11-03,2026-10-20');
     check('countBetween: this month', run(ctx, `DiaryStore.countBetween('2026-11-01', '2026-11-07')`) === 2);
@@ -138,7 +138,9 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
     const s = run(ctx, `DiaryStore.stats('2026-10-10', '2026-11-08')`);
     check('stats counts classes in range only', s.classes === 1, s.classes);
     check('unnamed drills are skipped', s.drills === 4, s.drills);
-    check('roll outcome totals', s.rolls === 7 && s.subsHit === 4 && s.subsTapped === 1 && s.noSub === 1);
+    check('legacy roll outcomes migrate to sub lines',
+      s.rolls === 7 && s.subsHit === 4 && s.subsTapped === 1 && s.noSub === 1,
+      JSON.stringify({ rolls: s.rolls, hit: s.subsHit, tap: s.subsTapped, none: s.noSub }));
     check('positions group case/space-insensitively, keep first spelling',
       s.positions[0].name === 'Closed guard' && s.positions[0].count === 2 && s.positions[0].minutes === 30);
     check('top sub hit is Armbar ×2', s.hits[0].name === 'Armbar' && s.hits[0].count === 2 && s.hits.length === 2);
@@ -156,6 +158,93 @@ const run = (ctx, code) => vm.runInContext(code, ctx);
     check('drill time falls back to share of drills without minutes',
       cnt.drillTime.basis === 'count' && Math.round(cnt.drillTime.rows[0].pct) === 67 && cnt.drillTime.rows[0].name === 'Knee cut');
     check('empty range', run(ctx, `DiaryStore.stats('2020-01-01', '2020-01-31').classes`) === 0);
+  }
+
+  // ══ 5. Drill techniques, multiple subs, partner belts ═══════
+  section('Techniques, multi-sub rolls, belts');
+  {
+    const ctx = makeContext();
+    await run(ctx, `DiaryStore.init()`);
+
+    const legacy = run(ctx, `DiaryStore.normalize({ date: '2026-01-01',
+      drills: [{ id: 'd', name: 'Mount' }],
+      rolls: [{ id: 'r', partner: 'Sam', outcome: 'subbed', technique: 'Triangle', notes: '' }] })`);
+    check('normalize gives old drills an empty technique list', Array.isArray(legacy.drills[0].techniques) && !legacy.drills[0].techniques.length);
+    check('normalize turns outcome/technique into one sub line',
+      legacy.rolls[0].subs.length === 1 && legacy.rolls[0].subs[0].type === 'subbed' &&
+      legacy.rolls[0].subs[0].technique === 'Triangle' && !('outcome' in legacy.rolls[0]) && legacy.rolls[0].belt === null);
+    check('legacy "No sub" outcome is kept', run(ctx, `DiaryStore.normalize({ date: 'x', drills: [],
+      rolls: [{ id: 'r', outcome: 'none', technique: '' }, { id: 'q', outcome: null }] }).rolls.map(r => r.noSub).join()`) === 'true,false');
+    check('normalize is idempotent', run(ctx, `(() => {
+      const e = { date: 'x', drills: [], rolls: [{ id: 'r', outcome: 'sub', technique: 'Armbar' }] };
+      DiaryStore.normalize(e); DiaryStore.normalize(e); return e.rolls[0].subs.length; })()`) === 1);
+
+    await run(ctx, `DiaryStore.save({ date: '2026-11-09',
+      drills: [
+        { id: 'a', name: 'Closed guard', mins: 15, techniques: [
+          { id: 't1', type: 'sweep', name: 'Scissor sweep' }, { id: 't2', type: 'sub', name: 'Armbar' },
+          { id: 't3', type: 'sweep', name: 'scissor  SWEEP' }, { id: 't4', type: 'control', name: '' }] },
+        { id: 'b', name: '', techniques: [{ id: 't5', type: 'control', name: 'Mount pressure' }] },
+        { id: 'c', name: '', techniques: [{ id: 't6', type: 'sweep', name: '' }] }],
+      rolls: [
+        { id: 'r1', belt: 'blue', partner: '', notes: '', subs: [
+          { id: 's1', type: 'sub', technique: 'Armbar' }, { id: 's2', type: 'sub', technique: 'Kimura' },
+          { id: 's3', type: 'subbed', technique: 'Triangle' }] },
+        { id: 'r2', belt: 'blue', partner: 'Jo', notes: '', subs: [{ id: 's4', type: 'sub', technique: '' }] },
+        { id: 'r3', belt: 'black', partner: '', notes: '', subs: [
+          { id: 's5', type: 'subbed', technique: 'Choke' }, { id: 's6', type: 'subbed', technique: 'choke' }] },
+        { id: 'r4', belt: null, partner: '', notes: 'flow roll', subs: [], noSub: true },
+        { id: 'r5', belt: 'white', partner: '', notes: '', subs: [] }] })`);
+
+    const s = run(ctx, `DiaryStore.stats('2026-11-09', '2026-11-09')`);
+    check('drill counts with techniques but no position; empty ones skipped', s.drills === 2, s.drills);
+    check('techniques group by type + name',
+      s.techniques[0].name === 'Scissor sweep' && s.techniques[0].type === 'sweep' && s.techniques[0].count === 2 &&
+      s.techniques.length === 3, JSON.stringify(s.techniques));
+    check('same name, different type stays separate',
+      s.techniques.some(t => t.type === 'sub' && t.name === 'Armbar'));
+    check('a roll can hold several subs both ways; only marked rolls count as no sub',
+      s.rolls === 5 && s.subsHit === 3 && s.subsTapped === 3 && s.noSub === 1,
+      JSON.stringify({ rolls: s.rolls, hit: s.subsHit, tap: s.subsTapped, none: s.noSub }));
+    check('hits and taps rank across lines',
+      s.hits.length === 2 && s.tapped[0].name === 'Choke' && s.tapped[0].count === 2);
+    check('rolls by belt in belt order, unset last',
+      s.byBelt.map(b => b.belt).join() === 'white,blue,black,' &&
+      s.byBelt[1].rolls === 2 && s.byBelt[1].hit === 3 && s.byBelt[1].tapped === 1 &&
+      s.byBelt[2].tapped === 2 && s.byBelt[3].belt === null, JSON.stringify(s.byBelt));
+  }
+
+  // ══ 6. Autocomplete suggestions by kind ════════════════════
+  section('Suggestions');
+  {
+    const ctx = makeContext();
+    await run(ctx, `DiaryStore.init()`);
+    await run(ctx, `DiaryStore.save({ date: '2026-11-09',
+      drills: [{ id: 'a', name: 'Spider Guard', techniques: [
+        { id: 't1', type: 'sweep', name: 'Lasso Sweep' }, { id: 't2', type: 'sub', name: 'Spider Triangle' },
+        { id: 't3', type: 'control', name: 'Body Triangle' }] }],
+      rolls: [{ id: 'r', belt: 'blue', partner: '', notes: '', subs: [{ id: 's', type: 'subbed', technique: 'Choi Bar' }] }] })`);
+    const lib = JSON.stringify([
+      { type: 'position', label: 'Mount' },
+      { type: 'submission', label: 'Armbar' },
+      { type: 'submission', label: 'My Secret Choke' },
+      { type: 'transition', label: 'Scissor Sweep', category: 'Sweeps' },
+      { type: 'transition', label: 'Knee Cut Pass', category: 'Passing' },
+      { type: 'transition', label: 'Single Leg Takedown', category: 'Takedowns & standing' },
+      { type: 'reaction', label: 'Opponent posts hand' }]);
+    const sg = run(ctx, `DiaryStore.suggestions(${lib})`);
+    const has = (list, n) => sg[list].includes(n);
+    check('subs list has no sweeps, passes, takedowns or positions',
+      !has('subs', 'Scissor Sweep') && !has('subs', 'Knee Cut Pass') && !has('subs', 'Single Leg Takedown') &&
+      !has('subs', 'Mount') && !has('subs', 'Lasso Sweep') && !has('subs', 'Spider Guard'));
+    check('subs list has library, built-in and typed submissions',
+      has('subs', 'My Secret Choke') && has('subs', 'Ezekiel Choke') && has('subs', 'Spider Triangle') && has('subs', 'Choi Bar'));
+    check('subs list is de-duplicated', sg.subs.filter(n => n.toLowerCase() === 'armbar').length === 1);
+    check('sweeps list: library sweeps + typed sweeps only',
+      sg.sweeps.join() === 'Lasso Sweep,Scissor Sweep', sg.sweeps.join());
+    check('positions list: library positions + drill positions only',
+      sg.positions.join() === 'Mount,Spider Guard', sg.positions.join());
+    check('controls list: positions + typed controls', has('controls', 'Mount') && has('controls', 'Body Triangle'));
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);
