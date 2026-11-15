@@ -524,25 +524,49 @@ const App = {
             reader.onload = () => {
               let data;
               try {
-                data = JSON.parse(reader.result);
+                data = GameplanAIPrompt.extractJson(reader.result);
               } catch (err) {
                 alert('That file is not valid JSON.');
                 return;
               }
-              const libCount = Array.isArray(data.library) ? data.library.length : 0;
-              const gpCount = Array.isArray(data.gameplans) ? data.gameplans.length : 0;
-              if (!confirm('Import ' + gpCount + ' gameplan(s) and ' + libCount + ' library move(s)?\n\n' +
-                'Items with matching ids will be overwritten; everything else is kept.')) return;
-              GameplanStore.importData(data).then(() => {
-                this.render('gp-list');
-              }).catch(err => {
-                console.error('Import failed', err);
-                alert('Import failed: ' + err.message);
-              });
+              this._confirmGameplanImport(data);
             };
             reader.readAsText(file);
           });
           input.click();
+          return;
+        }
+
+        if (action === 'gp-open-ai') {
+          GameplanUI.showAIImport();
+          return;
+        }
+
+        if (action === 'gp-copy-ai-prompt') {
+          // Built synchronously so iOS still treats the copy as part of the tap
+          const prompt = GameplanAIPrompt.build(Object.values(GameplanStore._libraryCache || {}));
+          const btn = document.getElementById('gp-ai-copy-btn');
+          const done = ok => {
+            if (!btn) return;
+            btn.textContent = ok ? 'Copied \u2713' : 'Copy failed \u2014 try again';
+            setTimeout(() => { btn.textContent = 'Copy AI prompt'; }, 2000);
+          };
+          this._copyText(prompt).then(() => done(true), () => done(false));
+          return;
+        }
+
+        if (action === 'gp-import-ai-paste') {
+          const box = document.getElementById('gp-ai-paste');
+          const text = box ? box.value.trim() : '';
+          if (!text) { alert('Paste the AI reply first.'); return; }
+          let data;
+          try {
+            data = GameplanAIPrompt.extractJson(text);
+          } catch (err) {
+            alert('Could not find valid JSON in that text. Make sure you copied the whole reply.');
+            return;
+          }
+          this._confirmGameplanImport(data);
           return;
         }
 
@@ -1255,6 +1279,49 @@ const App = {
     const overlay = document.querySelector('.gp-lib-detail-overlay');
     const libId = overlay ? overlay.dataset.libraryId : null;
     return libId ? GameplanStore.getLibraryEntry(libId) : null;
+  },
+
+  // Validate + confirm + import gameplan JSON (backup file or AI output)
+  _confirmGameplanImport(data) {
+    data = GameplanAIPrompt.normalize(data);
+    const libCount = Array.isArray(data && data.library) ? data.library.length : 0;
+    const gpCount = Array.isArray(data && data.gameplans) ? data.gameplans.length : 0;
+    if (!gpCount && !libCount) {
+      alert('Not a valid MovementApp gameplan file.');
+      return;
+    }
+    if (!confirm('Import ' + gpCount + ' gameplan(s) and ' + libCount + ' library move(s)?\n\n' +
+      'Items with matching ids will be overwritten; everything else is kept.')) return;
+    GameplanStore.importData(data).then(() => {
+      GameplanUI.closeNodeDetail();
+      this.render('gp-list');
+    }).catch(err => {
+      console.error('Import failed', err);
+      alert('Import failed: ' + err.message);
+    });
+  },
+
+  // Copy text to the clipboard, falling back to execCommand for older WebViews
+  _copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).catch(() => this._copyTextFallback(text));
+    }
+    return this._copyTextFallback(text);
+  },
+
+  _copyTextFallback(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok ? Promise.resolve() : Promise.reject(new Error('copy failed'));
   },
 
   // Re-render the library overlay in place (after adds/imports)

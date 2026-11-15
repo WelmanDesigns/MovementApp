@@ -40,6 +40,10 @@ const GameplanUI = {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
             Library
           </button>
+          <button class="gp-library-btn" data-action="gp-open-ai">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+            AI import
+          </button>
           <button class="gp-library-btn" data-action="gp-export" aria-label="Export backup" title="Export backup">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
@@ -200,6 +204,40 @@ const GameplanUI = {
       overlay.classList.remove('active');
       setTimeout(() => overlay.remove(), 200);
     }
+  },
+
+  // ── AI Import Sheet ───────────────────────────────────────
+
+  showAIImport() {
+    const existing = document.querySelector('.gp-node-detail-overlay');
+    if (existing) existing.remove();
+    const overlay = document.createElement('div');
+    overlay.className = 'gp-node-detail-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'AI gameplan import');
+    overlay.innerHTML = `
+      <div class="gp-node-detail-content">
+        <div class="gp-detail-header">
+          <button class="gp-detail-close" data-action="gp-close-detail" aria-label="Close">&times;</button>
+          <div class="gp-detail-type"><span>AI gameplan import</span></div>
+        </div>
+
+        <div class="gp-detail-section">
+          <label class="gp-detail-label">1 · Copy the prompt</label>
+          <p class="gp-ai-help">Paste it into ChatGPT, Claude or Gemini, then attach a photo or drawing of your gameplan and/or describe it. The prompt includes your move library so existing moves are reused.</p>
+          <button class="gp-detail-add-btn gp-ai-wide-btn" id="gp-ai-copy-btn" data-action="gp-copy-ai-prompt">Copy AI prompt</button>
+        </div>
+
+        <div class="gp-detail-section">
+          <label class="gp-detail-label" for="gp-ai-paste">2 · Paste the AI's reply</label>
+          <textarea class="gp-detail-input gp-ai-paste" id="gp-ai-paste" rows="6" placeholder='{ "app": "MovementApp", ... }' spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+          <button class="gp-detail-add-btn gp-ai-wide-btn" data-action="gp-import-ai-paste">Import gameplan</button>
+          <p class="gp-ai-help">Or save the reply as a .json file and use the import button.</p>
+        </div>
+      </div>`;
+    document.getElementById('app').appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('active'));
   },
 
   // ── Move Library Overlay ──────────────────────────────────

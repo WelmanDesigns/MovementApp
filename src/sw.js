@@ -18,6 +18,7 @@ const ASSETS = [
   './js/gameplan-store.js',
   './js/gameplan-canvas.js',
   './js/gameplan-ui.js',
+  './js/gameplan-ai-prompt.js',
   './js/belt-seed-generated.js',
   './js/belt-data.js',
   './js/belt-store.js',

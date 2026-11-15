@@ -1,4 +1,4 @@
-const CACHE_NAME = 'movement-app-v576518eae5b1';
+const CACHE_NAME = 'movement-app-vcdf4bbe66cd5';
 const ASSETS = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const ASSETS = [
   './js/gameplan-store.js',
   './js/gameplan-canvas.js',
   './js/gameplan-ui.js',
+  './js/gameplan-ai-prompt.js',
   './js/belt-seed-generated.js',
   './js/belt-data.js',
   './js/belt-store.js',

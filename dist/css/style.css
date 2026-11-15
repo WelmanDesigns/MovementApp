@@ -2114,6 +2114,25 @@ button.week-day:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   background: var(--accent-gp-dark);
 }
 
+.gp-ai-help {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+.gp-ai-help:last-child { margin: 10px 0 0; }
+.gp-ai-wide-btn {
+  width: 100%;
+  min-height: 46px;
+  font-size: 0.95rem;
+}
+.gp-ai-paste {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
 .gp-link-add-row {
   flex-wrap: wrap;
 }
